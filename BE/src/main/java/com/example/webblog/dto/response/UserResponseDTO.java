@@ -1,0 +1,22 @@
+package com.example.webblog.dto.response;
+
+import com.example.webblog.entity.Author;
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.experimental.FieldDefaults;
+
+import java.time.LocalDateTime;
+
+@Data
+@FieldDefaults(level = AccessLevel.PRIVATE)
+public class UserResponseDTO {
+    Long id;
+    String username;
+    String email;
+    String fullname;
+    Integer role;
+    Integer isActive;
+    Author author;
+    LocalDateTime created_At;
+    LocalDateTime updated_At;
+}
