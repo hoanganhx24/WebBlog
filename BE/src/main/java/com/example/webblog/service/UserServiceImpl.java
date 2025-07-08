@@ -49,4 +49,11 @@ public class UserServiceImpl implements UserService {
         }
         return userMapper.toUserResponse(userRepository.save(user));
     }
+
+    @Override
+    public void deleteUser(Long id) {
+        var user = userRepository.findUserById(id)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
+        userRepository.deleteById(id);
+    }
 }

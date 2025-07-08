@@ -9,4 +9,5 @@ public interface UserService {
     List<UserResponseDTO> getAllUser();
     UserResponseDTO getUserById(long id);
     UserResponseDTO changeInfo(Long id, UserChangeDTO req);
+    void deleteUser(Long id);
 }

@@ -35,4 +35,11 @@ public class UserController {
         return ResponseEntity.ok(new SuccessResponse<>(200, userService.changeInfo(userid, req)));
     }
 
+    @DeleteMapping("/{iduser}")
+    public ResponseEntity<SuccessResponse<String>> deleteUser(@PathVariable("iduser") Long iduser){
+        userService.deleteUser(iduser);
+        return ResponseEntity.ok(new SuccessResponse<>(200, "Da xoa thanh cong"));
+
+    }
+
 }
