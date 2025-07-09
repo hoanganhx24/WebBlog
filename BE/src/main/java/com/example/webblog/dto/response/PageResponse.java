@@ -1,5 +1,4 @@
 package com.example.webblog.dto.response;
 
-public class AuthorResponseDTO {
-
+public class PageResponse {
 }

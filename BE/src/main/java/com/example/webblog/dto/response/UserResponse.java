@@ -1,6 +1,5 @@
 package com.example.webblog.dto.response;
 
-import com.example.webblog.entity.Author;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
@@ -16,7 +15,6 @@ public class UserResponseDTO {
     String fullname;
     Integer role;
     Integer isActive;
-    Author author;
     LocalDateTime created_At;
     LocalDateTime updated_At;
 }
