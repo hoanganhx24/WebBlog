@@ -1,13 +1,13 @@
 package com.example.webblog.service;
 
-import com.example.webblog.dto.request.UserChangeDTO;
-import com.example.webblog.dto.response.UserResponseDTO;
+import com.example.webblog.dto.request.UserChangeRequest;
+import com.example.webblog.dto.response.UserResponse;
 
 import java.util.List;
 
 public interface UserService {
-    List<UserResponseDTO> getAllUser();
-    UserResponseDTO getUserById(long id);
-    UserResponseDTO changeInfo(Long id, UserChangeDTO req);
+    List<UserResponse> getAllUser();
+    UserResponse getUserById(long id);
+    UserResponse changeInfo(Long id, UserChangeRequest req);
     void deleteUser(Long id);
 }

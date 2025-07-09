@@ -7,7 +7,7 @@ import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 
 @Data
-public class RegisterDTO {
+public class RegisterRequets {
     @NotBlank(message = "Username là bắt buộc")
     @Length(min = 2, max = 50, message = "Username có từ 2 cho đến 50 kí tự!")
     private String username;

@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public class ResponseHepler {
+public class ResponseHelper {
     // Success response với data
     public static <T> ResponseEntity<ApiResponse<T>> success(T data, String message) {
         return ResponseEntity.ok(buildResponse(true, message, data, 200, null));

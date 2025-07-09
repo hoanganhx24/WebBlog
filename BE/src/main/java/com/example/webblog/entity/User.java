@@ -34,7 +34,13 @@ public class User {
     @Column(name = "isactive")
     private Integer isActive;
 
-    private Integer role;
+    @Column(name = "role")
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
+    private String avatar;
+
+    private String nickname;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -53,9 +59,9 @@ public class User {
         updatedAt = LocalDateTime.now();
     }
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL,  orphanRemoval = true)
-    private Author author;
-
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Admin admin;
+//    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL,  orphanRemoval = true)
+//    private Author author;
+//
+//    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private Admin admin;
 }

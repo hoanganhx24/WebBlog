@@ -1,7 +1,7 @@
 package com.example.webblog.service;
 
-import com.example.webblog.dto.request.UserChangeDTO;
-import com.example.webblog.dto.response.UserResponseDTO;
+import com.example.webblog.dto.request.UserChangeRequest;
+import com.example.webblog.dto.response.UserResponse;
 import com.example.webblog.exception.DuplicateResourceException;
 import com.example.webblog.mapper.UserMapper;
 import com.example.webblog.repository.UserRepository;
@@ -21,7 +21,7 @@ public class UserServiceImpl implements UserService {
     private UserMapper userMapper;
 
     @Override
-    public List<UserResponseDTO> getAllUser() {
+    public List<UserResponse> getAllUser() {
         return userRepository.findAll()
                 .stream()
                 .map(user -> userMapper.toUserResponse(user))
@@ -29,13 +29,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponseDTO getUserById(long id) {
+    public UserResponse getUserById(long id) {
         return userMapper.toUserResponse(userRepository.findUserById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id)));
     }
 
     @Override
-    public UserResponseDTO changeInfo(Long id, UserChangeDTO req) {
+    public UserResponse changeInfo(Long id, UserChangeRequest req) {
         var user = userRepository.findUserById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
         if (!user.getEmail().equals(req.getEmail())) {

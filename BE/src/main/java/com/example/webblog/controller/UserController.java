@@ -1,10 +1,11 @@
 package com.example.webblog.controller;
 
-import com.example.webblog.dto.request.UserChangeDTO;
-import com.example.webblog.dto.response.UserResponseDTO;
+import com.example.webblog.dto.request.UserChangeRequest;
+import com.example.webblog.dto.response.ApiResponse;
+import com.example.webblog.dto.response.UserResponse;
 import com.example.webblog.mapper.UserMapper;
-import com.example.webblog.model.response.SuccessResponse;
 import com.example.webblog.service.UserService;
+import com.example.webblog.util.ResponseHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,24 +22,27 @@ public class UserController {
     private UserService userService;
 
     @GetMapping
-    public ResponseEntity<SuccessResponse<List<UserResponseDTO>>> getAllUser(){
-        return ResponseEntity.ok(new SuccessResponse<>(200, userService.getAllUser()));
+    public ResponseEntity<ApiResponse<List<UserResponse>>> getAllUser(){
+        List<UserResponse> list = userService.getAllUser();
+        return ResponseHelper.success(list, "Lay thong tin thanh cong");
     }
 
     @GetMapping("/{userid}")
-    public ResponseEntity<SuccessResponse<UserResponseDTO>> getUserById(@PathVariable("userid") Long userid){
-        return ResponseEntity.ok(new SuccessResponse<>(200, userService.getUserById(userid)));
+    public ResponseEntity<ApiResponse<UserResponse>> getUserById(@PathVariable("userid") Long userid){
+        UserResponse userRes = userService.getUserById(userid);
+        return ResponseHelper.success(userRes, "Lay thong tin user thanh cong");
     }
 
     @PatchMapping("/{userid}")
-    public ResponseEntity<SuccessResponse<UserResponseDTO>>  updateUser(@PathVariable("userid") Long userid, @RequestBody UserChangeDTO req){
-        return ResponseEntity.ok(new SuccessResponse<>(200, userService.changeInfo(userid, req)));
+    public ResponseEntity<ApiResponse<UserResponse>>  updateUser(@PathVariable("userid") Long userid, @RequestBody UserChangeRequest req){
+        UserResponse userRes= userService.changeInfo(userid, req);
+        return ResponseHelper.success(userRes, "Cap nhat thong tin thanh cong");
     }
 
     @DeleteMapping("/{iduser}")
-    public ResponseEntity<SuccessResponse<String>> deleteUser(@PathVariable("iduser") Long iduser){
+    public ResponseEntity<ApiResponse<Object>> deleteUser(@PathVariable("iduser") Long iduser){
         userService.deleteUser(iduser);
-        return ResponseEntity.ok(new SuccessResponse<>(200, "Da xoa thanh cong"));
+        return ResponseHelper.success("Xoa thanh cong user");
 
     }
 

@@ -1,7 +1,7 @@
 package com.example.webblog.service;
 
-import com.example.webblog.dto.request.LoginDTO;
-import com.example.webblog.dto.request.RegisterDTO;
+import com.example.webblog.dto.request.LoginRequest;
+import com.example.webblog.dto.request.RegisterRequets;
 import com.example.webblog.entity.User;
 import com.example.webblog.exception.DuplicateResourceException;
 import com.example.webblog.mapper.UserMapper;
@@ -26,10 +26,9 @@ public class AuthServiceImpl implements AuthService{
 
     @Override
     @Transactional
-    public User register(RegisterDTO registerDTO) {
+    public User register(RegisterRequets registerDTO) {
 
-        System.out.println("Da chay den day");
-
+        //System.out.println("Da chay den day");
         if(userRepository.existsByUsername(registerDTO.getUsername())){
             throw new DuplicateResourceException("Username already exists");
         }
@@ -48,7 +47,7 @@ public class AuthServiceImpl implements AuthService{
     }
 
     @Override
-    public User login(LoginDTO req) {
+    public User login(LoginRequest req) {
         var user = userRepository.findByUsername(req.getUsername())
                 .orElseThrow(() -> new EntityNotFoundException("User not found with username: " + req.getUsername()));
 
