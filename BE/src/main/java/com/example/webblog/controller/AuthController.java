@@ -3,6 +3,7 @@ package com.example.webblog.controller;
 import com.example.webblog.dto.request.LoginRequest;
 import com.example.webblog.dto.request.RegisterRequets;
 import com.example.webblog.dto.response.ApiResponse;
+import com.example.webblog.dto.response.AuthResponse;
 import com.example.webblog.dto.response.UserResponse;
 import com.example.webblog.mapper.UserMapper;
 import com.example.webblog.service.AuthService;
@@ -25,15 +26,15 @@ public class AuthController {
     private UserMapper userMapper;
 
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse<UserResponse>> register(@Valid @RequestBody RegisterRequets req) {
-        UserResponse userResponse = userMapper.toUserResponse(authService.register(req));
-        return ResponseHelper.created(userResponse, "Tạo tài khỏ thành công!");
+    public ResponseEntity<ApiResponse<AuthResponse>> register(@Valid @RequestBody RegisterRequets req) {
+        AuthResponse authResponse = authService.register(req);
+        return ResponseHelper.created(authResponse, "Tạo tài khoản thành công!");
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<UserResponse>> login(@Valid @RequestBody LoginRequest req) {
-        UserResponse userResponse = userMapper.toUserResponse(authService.login(req));
-        return ResponseHelper.success(userResponse, "Dang nhap thanh cong");
+    public ResponseEntity<ApiResponse<AuthResponse>> login(@Valid @RequestBody LoginRequest req) {
+        AuthResponse authResponse = authService.login(req);
+        return ResponseHelper.success(authResponse, "Dang nhap thanh cong");
     }
 }
 
