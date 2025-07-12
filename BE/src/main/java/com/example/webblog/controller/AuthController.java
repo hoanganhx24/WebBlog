@@ -4,7 +4,6 @@ import com.example.webblog.dto.request.LoginRequest;
 import com.example.webblog.dto.request.RegisterRequets;
 import com.example.webblog.dto.response.ApiResponse;
 import com.example.webblog.dto.response.AuthResponse;
-import com.example.webblog.dto.response.UserResponse;
 import com.example.webblog.mapper.UserMapper;
 import com.example.webblog.service.AuthService;
 import com.example.webblog.util.ResponseHelper;

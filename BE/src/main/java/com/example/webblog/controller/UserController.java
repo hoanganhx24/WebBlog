@@ -6,8 +6,10 @@ import com.example.webblog.dto.response.UserResponse;
 import com.example.webblog.mapper.UserMapper;
 import com.example.webblog.service.UserService;
 import com.example.webblog.util.ResponseHelper;
+import jakarta.persistence.PrePersist;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,6 +24,7 @@ public class UserController {
     private UserService userService;
 
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<List<UserResponse>>> getAllUser(){
         List<UserResponse> list = userService.getAllUser();
         return ResponseHelper.success(list, "Lay thong tin thanh cong");

@@ -9,15 +9,15 @@ import com.example.webblog.entity.User;
 import com.example.webblog.exception.DuplicateResourceException;
 import com.example.webblog.mapper.UserMapper;
 import com.example.webblog.repository.UserRepository;
-import com.nimbusds.jose.JWSAlgorithm;
-import com.nimbusds.jose.JWSHeader;
-import com.nimbusds.jose.JWSObject;
-import com.nimbusds.jose.Payload;
+import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
+import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ValidationException;
 import lombok.experimental.NonFinal;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -25,12 +25,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.nio.charset.StandardCharsets;
+import javax.naming.AuthenticationException;
+import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
 
+@Slf4j
 @Service
 public class AuthServiceImpl implements AuthService{
     @Autowired
@@ -43,8 +45,6 @@ public class AuthServiceImpl implements AuthService{
     @Value("${jwt.signerkey}")
     private String signerKey;
 
-    @Autowired
-    PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional
@@ -61,9 +61,11 @@ public class AuthServiceImpl implements AuthService{
 
         User user = userMapper.toUser(registerDTO);
 
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+
         user.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
 
-        var token = generateToken(user.getUsername());
+        var token = generateToken(user);
 
         userRepository.save(user);
 
@@ -78,13 +80,14 @@ public class AuthServiceImpl implements AuthService{
 
     @Override
     public AuthResponse login(LoginRequest req) {
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         var user = userRepository.findByUsername(req.getUsername())
                 .orElseThrow(() -> new EntityNotFoundException("User not found with username: " + req.getUsername()));
 
         if(!passwordEncoder.matches(req.getPassword(), user.getPassword())){
             throw new ValidationException("Mat khau khong chinh xac");
         }
-        var token = generateToken(user.getUsername());
+        var token = generateToken(user);
         UserResponse  userResponse = userMapper.toUserResponse(user);
         return AuthResponse.builder()
                 .token(token)
@@ -92,15 +95,39 @@ public class AuthServiceImpl implements AuthService{
                 .build();
     }
 
-    private String generateToken(String username) {
+    @Override
+    public SignedJWT verifyToken(String token) throws AuthenticationException {
+        try {
+            SignedJWT signedJWT = SignedJWT.parse(token);
+
+            JWSVerifier verifier = new MACVerifier(signerKey.getBytes());
+            boolean isSignatureValid = signedJWT.verify(verifier);
+            if (!isSignatureValid) {
+                throw new AuthenticationException("Invalid JWT signature");
+            }
+
+            Date expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
+            if (expiryTime == null || !expiryTime.after(new Date())) {
+                throw new AuthenticationException("Expired JWT token");
+            }
+
+            return signedJWT;
+        } catch (ParseException e) {
+            throw new AuthenticationException("Invalid JWT format");
+        } catch (JOSEException e) {
+            throw new AuthenticationException("JWT verification failed");
+        }
+    }
+
+    private String generateToken(User user) {
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
 
         JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
-                .subject(username)
+                .subject(user.getUsername())
                 .issuer("hoanganhx24")
                 .issueTime(new Date())
                 .expirationTime(new Date(Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli()))
-                .claim("role", Role.USER)
+                .claim("scope", user.getRole().toString())
                 .build();
 
         Payload payload = new Payload(claimsSet.toJSONObject());
@@ -111,6 +138,7 @@ public class AuthServiceImpl implements AuthService{
            return jwsObject.serialize();
        }
        catch (Exception e){
+           log.error(e.toString());
            throw new ValidationException("JWT signing failed");
        }
     }
