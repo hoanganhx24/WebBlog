@@ -21,7 +21,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @RequiredArgsConstructor
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
-    private final String[] PUBLIC_ENDPOINTS = {"/auth/login", "auth/register", "auth/verifyToken"};
+    private final String[] PUBLIC_ENDPOINTS = {"/auth/login", "/auth/register", "/auth/logout"};
 
     @Autowired
     private CustomJwtDecoder customJwtDecoder;

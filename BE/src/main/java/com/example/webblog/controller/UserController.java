@@ -43,10 +43,17 @@ public class UserController {
     }
 
     @DeleteMapping("/{iduser}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<Object>> deleteUser(@PathVariable("iduser") Long iduser){
         userService.deleteUser(iduser);
         return ResponseHelper.success("Xoa thanh cong user");
 
+    }
+
+    @GetMapping("/myInfo")
+    public ResponseEntity<ApiResponse<UserResponse>> getMyInfo(){
+        UserResponse userRes = userService.getMyInfo();
+        return ResponseHelper.success(userRes, "Lay thong tin thanh cong");
     }
 
 }

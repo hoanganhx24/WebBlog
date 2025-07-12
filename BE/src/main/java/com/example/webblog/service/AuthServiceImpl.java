@@ -1,13 +1,15 @@
 package com.example.webblog.service;
 
 import com.example.webblog.dto.request.LoginRequest;
+import com.example.webblog.dto.request.LogoutRequest;
 import com.example.webblog.dto.request.RegisterRequets;
 import com.example.webblog.dto.response.AuthResponse;
 import com.example.webblog.dto.response.UserResponse;
-import com.example.webblog.entity.Role;
+import com.example.webblog.entity.InvalidateToken;
 import com.example.webblog.entity.User;
 import com.example.webblog.exception.DuplicateResourceException;
 import com.example.webblog.mapper.UserMapper;
+import com.example.webblog.repository.InvalidateTokenRepository;
 import com.example.webblog.repository.UserRepository;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
@@ -30,6 +32,7 @@ import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.UUID;
 
 
 @Slf4j
@@ -40,6 +43,9 @@ public class AuthServiceImpl implements AuthService{
 
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private InvalidateTokenRepository  invalidateTokenRepository;
 
     @NonFinal
     @Value("${jwt.signerkey}")
@@ -111,12 +117,33 @@ public class AuthServiceImpl implements AuthService{
                 throw new AuthenticationException("Expired JWT token");
             }
 
+            if (invalidateTokenRepository.existsById(signedJWT.getJWTClaimsSet().getJWTID())) {
+                throw  new AuthenticationException("Invalid JWT token");
+            }
+
             return signedJWT;
         } catch (ParseException e) {
             throw new AuthenticationException("Invalid JWT format");
         } catch (JOSEException e) {
             throw new AuthenticationException("JWT verification failed");
         }
+    }
+
+    @Override
+    public void logout(LogoutRequest req) throws AuthenticationException, ParseException {
+        var signed = verifyToken(req.getToken());
+
+        log.info(signed.getJWTClaimsSet().getJWTID());
+
+        String jti = signed.getJWTClaimsSet().getJWTID();
+        Date expiryTime = signed.getJWTClaimsSet().getExpirationTime();
+
+        InvalidateToken invalidateToken = InvalidateToken.builder()
+                .id(jti)
+                .expiryTime(expiryTime)
+                .build();
+
+        invalidateTokenRepository.save(invalidateToken);
     }
 
     private String generateToken(User user) {
@@ -128,6 +155,7 @@ public class AuthServiceImpl implements AuthService{
                 .issueTime(new Date())
                 .expirationTime(new Date(Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli()))
                 .claim("scope", user.getRole().toString())
+                .jwtID(UUID.randomUUID().toString())
                 .build();
 
         Payload payload = new Payload(claimsSet.toJSONObject());

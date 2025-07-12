@@ -1,6 +1,7 @@
 package com.example.webblog.controller;
 
 import com.example.webblog.dto.request.LoginRequest;
+import com.example.webblog.dto.request.LogoutRequest;
 import com.example.webblog.dto.request.RegisterRequets;
 import com.example.webblog.dto.response.ApiResponse;
 import com.example.webblog.dto.response.AuthResponse;
@@ -14,6 +15,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.naming.AuthenticationException;
+import java.text.ParseException;
 
 @RestController
 @RequestMapping("/auth")
@@ -34,6 +38,12 @@ public class AuthController {
     public ResponseEntity<ApiResponse<AuthResponse>> login(@Valid @RequestBody LoginRequest req) {
         AuthResponse authResponse = authService.login(req);
         return ResponseHelper.success(authResponse, "Dang nhap thanh cong");
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponse<Object>> logout(@RequestBody LogoutRequest req) throws AuthenticationException, ParseException {
+        authService.logout(req);
+        return ResponseHelper.success("Dang xuat thanh cong");
     }
 }
 
