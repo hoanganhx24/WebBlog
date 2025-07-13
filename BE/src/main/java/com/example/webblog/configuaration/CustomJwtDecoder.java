@@ -31,7 +31,7 @@ public class CustomJwtDecoder implements JwtDecoder {
     @Override
     public Jwt decode(String token) throws JwtException {
         try{
-            authService.verifyToken(token);
+            authService.verifyToken(token, false);
         }
         catch (AuthenticationException e) {
             httpServletRequest.setAttribute("auth_error", e);

@@ -2,6 +2,7 @@ package com.example.webblog.controller;
 
 import com.example.webblog.dto.request.LoginRequest;
 import com.example.webblog.dto.request.LogoutRequest;
+import com.example.webblog.dto.request.RefreshRequest;
 import com.example.webblog.dto.request.RegisterRequets;
 import com.example.webblog.dto.response.ApiResponse;
 import com.example.webblog.dto.response.AuthResponse;
@@ -44,6 +45,12 @@ public class AuthController {
     public ResponseEntity<ApiResponse<Object>> logout(@RequestBody LogoutRequest req) throws AuthenticationException, ParseException {
         authService.logout(req);
         return ResponseHelper.success("Dang xuat thanh cong");
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<ApiResponse<AuthResponse>> refresh(@Valid @RequestBody RefreshRequest req) throws AuthenticationException, ParseException {
+        AuthResponse authResponse = authService.refreshToken(req);
+        return ResponseHelper.success(authResponse, "Refresh Token thanh cong");
     }
 }
 

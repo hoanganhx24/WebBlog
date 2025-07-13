@@ -2,8 +2,10 @@ package com.example.webblog.service;
 
 import com.example.webblog.dto.request.LoginRequest;
 import com.example.webblog.dto.request.LogoutRequest;
+import com.example.webblog.dto.request.RefreshRequest;
 import com.example.webblog.dto.request.RegisterRequets;
 import com.example.webblog.dto.response.AuthResponse;
+import com.example.webblog.dto.response.RefreshResponse;
 import com.example.webblog.dto.response.UserResponse;
 import com.example.webblog.entity.InvalidateToken;
 import com.example.webblog.entity.User;
@@ -50,6 +52,14 @@ public class AuthServiceImpl implements AuthService{
     @NonFinal
     @Value("${jwt.signerkey}")
     private String signerKey;
+
+    @NonFinal
+    @Value("${jwt.valid.duration}")
+    private int validDuration;
+
+    @NonFinal
+    @Value("${jwt.refreshable.duration}")
+    private int refreshableDuration;
 
 
     @Override
@@ -102,7 +112,7 @@ public class AuthServiceImpl implements AuthService{
     }
 
     @Override
-    public SignedJWT verifyToken(String token) throws AuthenticationException {
+    public SignedJWT verifyToken(String token, boolean isRefresh) throws AuthenticationException {
         try {
             SignedJWT signedJWT = SignedJWT.parse(token);
 
@@ -112,8 +122,14 @@ public class AuthServiceImpl implements AuthService{
                 throw new AuthenticationException("Invalid JWT signature");
             }
 
-            Date expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
-            if (expiryTime == null || !expiryTime.after(new Date())) {
+            Date expiryTime = (isRefresh)
+                    ? new Date(signedJWT.getJWTClaimsSet()
+                        .getIssueTime()
+                        .toInstant()
+                        .plus(refreshableDuration, ChronoUnit.SECONDS).toEpochMilli())
+                    :signedJWT.getJWTClaimsSet().getExpirationTime();
+
+            if ((expiryTime == null || !expiryTime.after(new Date())) && !isRefresh) {
                 throw new AuthenticationException("Expired JWT token");
             }
 
@@ -131,7 +147,7 @@ public class AuthServiceImpl implements AuthService{
 
     @Override
     public void logout(LogoutRequest req) throws AuthenticationException, ParseException {
-        var signed = verifyToken(req.getToken());
+        var signed = verifyToken(req.getToken(), false);
 
         log.info(signed.getJWTClaimsSet().getJWTID());
 
@@ -146,6 +162,34 @@ public class AuthServiceImpl implements AuthService{
         invalidateTokenRepository.save(invalidateToken);
     }
 
+    @Override
+    public AuthResponse refreshToken(RefreshRequest req) throws AuthenticationException, ParseException {
+        var signed = verifyToken(req.getToken(), true);
+
+        String jti = signed.getJWTClaimsSet().getJWTID();
+        Date expiryTime = signed.getJWTClaimsSet().getExpirationTime();
+
+        InvalidateToken invalidateToken = InvalidateToken.builder()
+                .id(jti)
+                .expiryTime(expiryTime)
+                .build();
+
+        invalidateTokenRepository.save(invalidateToken);
+
+        var username = signed.getJWTClaimsSet().getSubject();
+
+        var user = userRepository.findByUsername(username)
+                .orElseThrow(() ->  new EntityNotFoundException("User not found with username: " + username));
+
+        var token = generateToken(user);
+        UserResponse  userResponse = userMapper.toUserResponse(user);
+        return AuthResponse.builder()
+                .token(token)
+                .user(userResponse)
+                .build();
+
+    }
+
     private String generateToken(User user) {
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
 
@@ -153,7 +197,7 @@ public class AuthServiceImpl implements AuthService{
                 .subject(user.getUsername())
                 .issuer("hoanganhx24")
                 .issueTime(new Date())
-                .expirationTime(new Date(Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli()))
+                .expirationTime(new Date(Instant.now().plus(validDuration, ChronoUnit.SECONDS).toEpochMilli()))
                 .claim("scope", user.getRole().toString())
                 .jwtID(UUID.randomUUID().toString())
                 .build();

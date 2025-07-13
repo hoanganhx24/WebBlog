@@ -8,7 +8,6 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
-public class TestResponse {
+public class RefreshResponse {
     String token;
-    Boolean valid;
 }
