@@ -43,8 +43,9 @@ public class ApplicationInitConfig {
                         .role(Role.ADMIN)
                         .password(passwordEncoder.encode(ADMIN_PASSWORD))
                         .email("admin@gmail.com")
-                        .fullname("Admin")
-                        .isActive(1)
+                        .firstName("Admin")
+                        .lastName("")
+                        .isActive(true)
                         .build();
                 userRepository.save(user);
             }

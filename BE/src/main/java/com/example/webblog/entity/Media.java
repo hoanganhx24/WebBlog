@@ -12,11 +12,14 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 @Entity
-public class Category {
+public class Media {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    private String name;
-    private String description;
+    private String url;
+    private String altText;
+    private String type;
+    private Boolean isThumbnail;
+    private Integer position;
 }

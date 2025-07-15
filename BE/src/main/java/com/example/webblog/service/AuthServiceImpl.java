@@ -5,7 +5,6 @@ import com.example.webblog.dto.request.LogoutRequest;
 import com.example.webblog.dto.request.RefreshRequest;
 import com.example.webblog.dto.request.RegisterRequets;
 import com.example.webblog.dto.response.AuthResponse;
-import com.example.webblog.dto.response.RefreshResponse;
 import com.example.webblog.dto.response.UserResponse;
 import com.example.webblog.entity.InvalidateToken;
 import com.example.webblog.entity.User;
@@ -40,14 +39,6 @@ import java.util.UUID;
 @Slf4j
 @Service
 public class AuthServiceImpl implements AuthService{
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private UserMapper userMapper;
-
-    @Autowired
-    private InvalidateTokenRepository  invalidateTokenRepository;
 
     @NonFinal
     @Value("${jwt.signerkey}")
@@ -60,6 +51,21 @@ public class AuthServiceImpl implements AuthService{
     @NonFinal
     @Value("${jwt.refreshable.duration}")
     private int refreshableDuration;
+
+    private final UserRepository userRepository;
+
+    private final UserMapper userMapper;
+
+    private final InvalidateTokenRepository invalidateTokenRepository;
+
+    @Autowired
+    public AuthServiceImpl(UserRepository userRepository,
+                           UserMapper userMapper,
+                           InvalidateTokenRepository invalidateTokenRepository) {
+        this.userRepository = userRepository;
+        this.userMapper = userMapper;
+        this.invalidateTokenRepository = invalidateTokenRepository;
+    }
 
 
     @Override

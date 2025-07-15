@@ -12,5 +12,6 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserChangeRequest {
     String email;
-    String fullname;
+    String firstName;
+    String lastName;
 }

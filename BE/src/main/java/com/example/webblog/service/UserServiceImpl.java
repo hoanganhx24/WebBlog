@@ -33,13 +33,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponse getUserById(long id) {
+    public UserResponse getUserById(String id) {
         return userMapper.toUserResponse(userRepository.findUserById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id)));
     }
 
     @Override
-    public UserResponse changeInfo(Long id, UserChangeRequest req) {
+    public UserResponse changeInfo(String id, UserChangeRequest req) {
         var user = userRepository.findUserById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
         if (!user.getEmail().equals(req.getEmail())) {
@@ -48,9 +48,8 @@ public class UserServiceImpl implements UserService {
             }
             user.setEmail(req.getEmail());
         }
-        if (user.getFullname().equals(req.getFullname())) {
-            user.setFullname(req.getFullname());
-        }
+        user.setFirstName(req.getFirstName());
+        user.setLastName(req.getLastName());
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
@@ -64,7 +63,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteUser(Long id) {
+    public void deleteUser(String id) {
         var user = userRepository.findUserById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
         userRepository.deleteById(id);

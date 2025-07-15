@@ -17,10 +17,6 @@ public class RegisterRequets {
     @Length(min = 10, max = 50 , message = "Email có từ 10 đến 15 kí tự!")
     private String email;
 
-    @NotBlank(message = "Tên người dùng là bắt buộc")
-    @Length(min = 10, max = 100, message = "Tên có từ 10 đến 100 kí tự!")
-    private String fullname;
-
     @NotBlank(message = "Password là bắt buộc!")
     @Length(min = 8, max = 20, message = "Mật khẩu có từ 8 đến 20 kí tự!")
     private String password;

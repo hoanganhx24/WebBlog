@@ -10,12 +10,13 @@ import java.time.LocalDateTime;
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserResponse {
-    Long id;
+    String id;
     String username;
     String email;
-    String fullname;
+    String firstName;
+    String lastName;
     Role role;
-    Integer isActive;
+    Boolean isActive;
     LocalDateTime created_At;
     LocalDateTime updated_At;
 }

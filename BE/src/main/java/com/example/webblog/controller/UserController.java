@@ -17,11 +17,12 @@ import java.util.List;
 @RestController
 @RequestMapping("/user")
 public class UserController {
-    @Autowired
-    private UserMapper userMapper;
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
@@ -31,20 +32,20 @@ public class UserController {
     }
 
     @GetMapping("/{userid}")
-    public ResponseEntity<ApiResponse<UserResponse>> getUserById(@PathVariable("userid") Long userid){
+    public ResponseEntity<ApiResponse<UserResponse>> getUserById(@PathVariable("userid") String userid){
         UserResponse userRes = userService.getUserById(userid);
         return ResponseHelper.success(userRes, "Lay thong tin user thanh cong");
     }
 
     @PatchMapping("/{userid}")
-    public ResponseEntity<ApiResponse<UserResponse>>  updateUser(@PathVariable("userid") Long userid, @RequestBody UserChangeRequest req){
+    public ResponseEntity<ApiResponse<UserResponse>>  updateUser(@PathVariable("userid") String userid, @RequestBody UserChangeRequest req){
         UserResponse userRes= userService.changeInfo(userid, req);
         return ResponseHelper.success(userRes, "Cap nhat thong tin thanh cong");
     }
 
     @DeleteMapping("/{iduser}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<Object>> deleteUser(@PathVariable("iduser") Long iduser){
+    public ResponseEntity<ApiResponse<Object>> deleteUser(@PathVariable("iduser") String iduser){
         userService.deleteUser(iduser);
         return ResponseHelper.success("Xoa thanh cong user");
 

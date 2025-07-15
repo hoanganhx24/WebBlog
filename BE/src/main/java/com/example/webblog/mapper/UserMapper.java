@@ -13,10 +13,9 @@ public class UserMapper {
         User user = new User();
         user.setUsername(registerDTO.getUsername());
         user.setEmail(registerDTO.getEmail());
-        user.setFullname(registerDTO.getFullname());
         user.setPassword(registerDTO.getPassword());
         user.setRole(Role.USER);
-        user.setIsActive(1);
+        user.setIsActive(true);
 
         return user;
     }
@@ -28,7 +27,8 @@ public class UserMapper {
         userResponseDTO.setId(user.getId());
         userResponseDTO.setUsername(user.getUsername());
         userResponseDTO.setEmail(user.getEmail());
-        userResponseDTO.setFullname(user.getFullname());
+        userResponseDTO.setFirstName(user.getFirstName());
+        userResponseDTO.setLastName(user.getLastName());
         userResponseDTO.setRole(user.getRole());
         userResponseDTO.setIsActive(user.getIsActive());
         userResponseDTO.setCreated_At(user.getCreatedAt());

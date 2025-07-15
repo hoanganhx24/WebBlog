@@ -7,8 +7,8 @@ import java.util.List;
 
 public interface UserService {
     List<UserResponse> getAllUser();
-    UserResponse getUserById(long id);
-    UserResponse changeInfo(Long id, UserChangeRequest req);
+    UserResponse getUserById(String id);
+    UserResponse changeInfo(String id, UserChangeRequest req);
     UserResponse getMyInfo();
-    void deleteUser(Long id);
+    void deleteUser(String id);
 }
