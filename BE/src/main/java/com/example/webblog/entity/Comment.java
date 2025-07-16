@@ -1,9 +1,12 @@
 package com.example.webblog.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -33,12 +36,17 @@ public class Comment {
         updatedAt = LocalDateTime.now();
     }
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id", nullable = false)
+    @JsonBackReference
     private Post post;
+
+    @OneToMany(mappedBy = "comment", fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private List<Attachment> attachments;
 
 }

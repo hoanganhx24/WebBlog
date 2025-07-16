@@ -1,5 +1,6 @@
 package com.example.webblog.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -64,11 +65,15 @@ public class User {
         updatedAt = LocalDateTime.now();
     }
 
-    @OneToMany(mappedBy = "author")
+    @OneToMany(mappedBy = "author",  fetch = FetchType.LAZY)
+    @JsonBackReference
     private List<Post>  posts;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user",   fetch = FetchType.LAZY)
     private List<Comment> comments;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<Like> likes;
 
     public String getFullName() {
         return Stream.of(lastName, firstName)

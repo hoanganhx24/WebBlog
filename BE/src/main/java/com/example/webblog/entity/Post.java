@@ -1,5 +1,7 @@
 package com.example.webblog.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -39,8 +41,33 @@ public class Post {
         updatedAt = LocalDateTime.now();
     }
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id", nullable = false)
+    @JsonBackReference
     private User author;
 
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private List<Comment> comments;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "post_category",
+            joinColumns = @JoinColumn(name = "post_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id")
+    )
+    @JsonManagedReference
+    private List<Category> categories;
+
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private List<Like> likes;
+
+//    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
+//    @JsonManagedReference
+//    private List<PostView> postViews;
+
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private List<Attachment> attachments;
 }

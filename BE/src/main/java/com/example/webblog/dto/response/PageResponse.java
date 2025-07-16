@@ -1,11 +1,11 @@
 package com.example.webblog.dto.response;
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 @Builder
 public class PageResponse<T> {
     private List<T> content;

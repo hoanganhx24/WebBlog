@@ -4,25 +4,27 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.List;
-
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Entity
-public class Category {
+public class Attachment {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    private String name;
-    private String description;
-    private String slug;
-    private String icon;
+    private String url;
+    private String type;
 
-    @ManyToMany(mappedBy = "categories",  fetch = FetchType.LAZY)
+    @ManyToOne
+    @JoinColumn(name = "post_id")
     @JsonBackReference
-    private List<Post> posts;
+    private Post post;
+
+    @ManyToOne
+    @JoinColumn(name = "comment_id")
+    @JsonBackReference
+    private Comment comment;
 }

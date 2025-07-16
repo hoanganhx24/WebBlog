@@ -1,9 +1,6 @@
 package com.example.webblog.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -18,8 +15,21 @@ import java.time.LocalDateTime;
 public class PostView {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private Long id;
+    private String id;
 
     private LocalDateTime viewAt;
+
+    @PrePersist
+    public void prePersist() {
+        viewAt = LocalDateTime.now();
+    }
+
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "post_id")
+//    private Post post;
+//
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "user_id")
+//    private User user;
 
 }
