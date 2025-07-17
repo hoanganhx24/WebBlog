@@ -10,8 +10,9 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
-public class CategoryResponse {
+public class CategoryCreateResponse {
     String id;
     String name;
     String slug;
+    Category categoryParent;
 }

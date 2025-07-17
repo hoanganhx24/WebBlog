@@ -12,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
-public class CreatePostRequest {
+public class PostCreateRequest {
     @NotBlank
     String title;
 

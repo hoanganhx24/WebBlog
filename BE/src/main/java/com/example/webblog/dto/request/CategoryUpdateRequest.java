@@ -1,6 +1,6 @@
-package com.example.webblog.dto.response;
+package com.example.webblog.dto.request;
 
-import com.example.webblog.entity.Category;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -10,8 +10,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
-public class CategoryResponse {
-    String id;
+public class CategoryUpdateRequest {
+    @NotBlank
     String name;
-    String slug;
 }

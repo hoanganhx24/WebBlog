@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
-public class SearchUserRequest {
+public class UserFilterRequest {
     String keyword;
     Role role;
     Boolean isActive;

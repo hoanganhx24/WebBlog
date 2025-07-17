@@ -1,6 +1,6 @@
 package com.example.webblog.repository.Specification;
 
-import com.example.webblog.dto.request.SearchUserRequest;
+import com.example.webblog.dto.request.UserFilterRequest;
 import com.example.webblog.entity.Role;
 import com.example.webblog.entity.User;
 import org.springframework.data.jpa.domain.Specification;
@@ -8,7 +8,7 @@ import org.springframework.data.jpa.domain.Specification;
 import java.time.LocalDateTime;
 
 public class UserSpecification {
-    public static Specification<User> build(SearchUserRequest request){
+    public static Specification<User> build(UserFilterRequest request){
         return hasKeyword(request.getKeyword())
                 .and(hasRole(request.getRole()))
                 .and(hasIsActive(request.getIsActive()))

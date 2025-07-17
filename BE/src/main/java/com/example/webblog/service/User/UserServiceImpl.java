@@ -1,6 +1,6 @@
 package com.example.webblog.service.User;
 
-import com.example.webblog.dto.request.SearchUserRequest;
+import com.example.webblog.dto.request.UserFilterRequest;
 import com.example.webblog.dto.request.UserChangeRequest;
 import com.example.webblog.dto.response.PageResponse;
 import com.example.webblog.dto.response.UserResponse;
@@ -78,7 +78,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public PageResponse<UserResponse> getUsers(SearchUserRequest request) {
+    public PageResponse<UserResponse> getUsers(UserFilterRequest request) {
         Sort sort = Sort.unsorted();
         if (request.getSortBy() != null) {
             Sort.Direction direction = Sort.Direction.ASC;

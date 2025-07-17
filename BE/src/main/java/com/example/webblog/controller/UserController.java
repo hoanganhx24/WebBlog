@@ -1,6 +1,6 @@
 package com.example.webblog.controller;
 
-import com.example.webblog.dto.request.SearchUserRequest;
+import com.example.webblog.dto.request.UserFilterRequest;
 import com.example.webblog.dto.request.UserChangeRequest;
 import com.example.webblog.dto.response.ApiResponse;
 import com.example.webblog.dto.response.PageResponse;
@@ -57,7 +57,7 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<PageResponse<UserResponse>>> getUsers(@ModelAttribute SearchUserRequest request){
+    public ResponseEntity<ApiResponse<PageResponse<UserResponse>>> getUsers(@ModelAttribute UserFilterRequest request){
         return ResponseHelper.success(userService.getUsers(request), "Lay danh sach user co phan trang thanh cong");
     }
 
