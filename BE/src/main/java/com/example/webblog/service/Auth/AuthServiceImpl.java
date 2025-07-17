@@ -1,4 +1,4 @@
-package com.example.webblog.service;
+package com.example.webblog.service.Auth;
 
 import com.example.webblog.dto.request.LoginRequest;
 import com.example.webblog.dto.request.LogoutRequest;
@@ -38,7 +38,7 @@ import java.util.UUID;
 
 @Slf4j
 @Service
-public class AuthServiceImpl implements AuthService{
+public class AuthServiceImpl implements AuthService {
 
     @NonFinal
     @Value("${jwt.signerkey}")

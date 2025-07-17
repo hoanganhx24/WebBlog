@@ -4,14 +4,24 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class LoginRequest {
+@Builder
+public class CreatePostRequest {
     @NotBlank
-    String username;
+    String title;
+
     @NotBlank
-    String password;
+    String content;
+
+    @NotBlank
+    List<String> categoryIds;
+
+    List<AttachmentRequest> attachments;
+
 }

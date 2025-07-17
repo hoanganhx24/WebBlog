@@ -1,4 +1,4 @@
-package com.example.webblog.service;
+package com.example.webblog.service.User;
 
 import com.example.webblog.dto.request.UserChangeRequest;
 import com.example.webblog.dto.response.UserResponse;

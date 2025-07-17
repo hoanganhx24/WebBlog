@@ -1,4 +1,4 @@
-package com.example.webblog.service;
+package com.example.webblog.service.User;
 
 import com.example.webblog.dto.request.UserChangeRequest;
 import com.example.webblog.dto.response.UserResponse;
@@ -8,7 +8,6 @@ import com.example.webblog.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 

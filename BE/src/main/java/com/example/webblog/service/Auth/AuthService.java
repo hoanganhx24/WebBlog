@@ -1,11 +1,10 @@
-package com.example.webblog.service;
+package com.example.webblog.service.Auth;
 
 import com.example.webblog.dto.request.LoginRequest;
 import com.example.webblog.dto.request.LogoutRequest;
 import com.example.webblog.dto.request.RefreshRequest;
 import com.example.webblog.dto.request.RegisterRequets;
 import com.example.webblog.dto.response.AuthResponse;
-import com.example.webblog.dto.response.RefreshResponse;
 import com.nimbusds.jwt.SignedJWT;
 
 import javax.naming.AuthenticationException;

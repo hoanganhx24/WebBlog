@@ -1,6 +1,6 @@
 package com.example.webblog.configuaration;
 
-import com.example.webblog.service.AuthService;
+import com.example.webblog.service.Auth.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

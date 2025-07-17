@@ -73,7 +73,7 @@ public class User {
     private List<Comment> comments;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    private List<Like> likes;
+    private List<Reaction> reactions;
 
     public String getFullName() {
         return Stream.of(lastName, firstName)

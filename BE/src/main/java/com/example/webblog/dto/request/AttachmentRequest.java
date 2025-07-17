@@ -1,14 +1,18 @@
 package com.example.webblog.dto.request;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Builder
-public class LogoutRequest {
-    String token;
+public class AttachmentRequest {
+    @NotBlank
+    String url;
+
+    @NotBlank
+    String type;
 }

@@ -21,8 +21,12 @@ public class Post {
 
     private String title;
 
+    private String slug;
+
     @Column(columnDefinition = "TEXT")
     private String content;
+
+    private PostStatus status;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -61,7 +65,7 @@ public class Post {
 
     @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
     @JsonManagedReference
-    private List<Like> likes;
+    private List<Reaction> reactions;
 
 //    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
 //    @JsonManagedReference

@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @Entity
-public class Like {
+public class Reaction {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
