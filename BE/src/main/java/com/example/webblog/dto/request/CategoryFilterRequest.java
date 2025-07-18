@@ -1,6 +1,5 @@
-package com.example.webblog.dto.response;
+package com.example.webblog.dto.request;
 
-import com.example.webblog.entity.Category;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -10,8 +9,8 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
-public class CategoryResponse {
-    String id;
+public class CategoryFilterRequest {
     String name;
-    String slug;
+    int page = 0;
+    int pageSize = 10;
 }

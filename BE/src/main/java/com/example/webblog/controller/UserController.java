@@ -1,7 +1,9 @@
 package com.example.webblog.controller;
 
+import com.example.webblog.dto.request.UserFilterRequest;
 import com.example.webblog.dto.request.UserChangeRequest;
 import com.example.webblog.dto.response.ApiResponse;
+import com.example.webblog.dto.response.PageResponse;
 import com.example.webblog.dto.response.UserResponse;
 import com.example.webblog.service.User.UserService;
 import com.example.webblog.util.ResponseHelper;
@@ -21,7 +23,7 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping
+    @GetMapping("/{alluser}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<List<UserResponse>>> getAllUser(){
         List<UserResponse> list = userService.getAllUser();
@@ -52,6 +54,11 @@ public class UserController {
     public ResponseEntity<ApiResponse<UserResponse>> getMyInfo(){
         UserResponse userRes = userService.getMyInfo();
         return ResponseHelper.success(userRes, "Lay thong tin thanh cong");
+    }
+
+    @GetMapping
+    public ResponseEntity<ApiResponse<PageResponse<UserResponse>>> getUsers(@ModelAttribute UserFilterRequest request){
+        return ResponseHelper.success(userService.getUsers(request), "Lay danh sach user co phan trang thanh cong");
     }
 
 }

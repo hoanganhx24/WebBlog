@@ -10,7 +10,10 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
-public class UpdateCategoryRequest {
+public class CategoryCreateRequest {
     @NotBlank
     String name;
+
+    String parentId;
+
 }

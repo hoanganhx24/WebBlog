@@ -1,11 +1,15 @@
 package com.example.webblog.service.Category;
 
-import com.example.webblog.dto.request.CreateCategoryRequest;
-import com.example.webblog.dto.request.UpdateCategoryRequest;
-import com.example.webblog.dto.response.CategoryResponse;
+import com.example.webblog.dto.request.CategoryCreateRequest;
+import com.example.webblog.dto.request.CategoryFilterRequest;
+import com.example.webblog.dto.request.CategoryUpdateRequest;
+import com.example.webblog.dto.response.CategoryCreateResponse;
+import com.example.webblog.dto.response.CategoryFilterResponse;
+import com.example.webblog.dto.response.PageResponse;
 
 public interface CategoryService {
-    CategoryResponse createCategory(CreateCategoryRequest request);
+    CategoryCreateResponse createCategory(CategoryCreateRequest request);
     void deleteCategoryById(String id);
-    CategoryResponse updateInfo(String id, UpdateCategoryRequest request);
+    CategoryCreateResponse updateInfo(String id, CategoryUpdateRequest request);
+    PageResponse<CategoryFilterResponse> getCategories(CategoryFilterRequest request);
 }
