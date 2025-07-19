@@ -17,7 +17,6 @@ public class Attachment {
 
     private String url;
     private String type;
-    private Integer size;
 
     @ManyToOne
     @JoinColumn(name = "post_id")

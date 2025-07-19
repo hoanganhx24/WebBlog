@@ -17,6 +17,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -66,7 +67,7 @@ public class UserServiceImpl implements UserService {
         var context = SecurityContextHolder.getContext();
         String username = context.getAuthentication().getName();
         var user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new EntityNotFoundException("User not found with username: " + username));
+                .orElseThrow(() -> new AuthenticationServiceException("User not found with username: " + username));
         return userMapper.toUserResponse(user);
     }
 

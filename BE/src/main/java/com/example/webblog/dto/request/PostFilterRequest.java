@@ -1,16 +1,19 @@
 package com.example.webblog.dto.request;
 
-import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UserChangeRequest {
-    String email;
-    String firstName;
-    String lastName;
+@Builder
+public class PostFilterRequest {
+    String keyword;
+    String category;
+    LocalDateTime fromDate;
+    LocalDateTime toDate;
 }

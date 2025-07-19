@@ -71,7 +71,7 @@ public class Post {
 //    @JsonManagedReference
 //    private List<PostView> postViews;
 
-    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<Attachment> attachments;
 }

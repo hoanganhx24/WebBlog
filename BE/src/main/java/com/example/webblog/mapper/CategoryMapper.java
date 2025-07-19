@@ -2,28 +2,27 @@ package com.example.webblog.mapper;
 
 import com.example.webblog.dto.response.CategoryCreateResponse;
 import com.example.webblog.dto.response.CategoryFilterResponse;
+import com.example.webblog.dto.response.CategoryResponse;
 import com.example.webblog.entity.Category;
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 
-@Component
-public class CategoryMapper {
-    public CategoryCreateResponse toCreateCategoryResponse(Category category) {
-        CategoryCreateResponse categoryCreateResponse = CategoryCreateResponse.builder()
-                .id(category.getId())
-                .name(category.getName())
-                .slug(category.getSlug())
-                .categoryParent(category.getParent())
-                .build();
-        return categoryCreateResponse;
-    }
+@Mapper(componentModel = "spring")
+public interface CategoryMapper {
+    @Mapping(target = "id", source = "id")
+    @Mapping(target = "name", source = "name")
+    @Mapping(target = "slug", source = "slug")
+    @Mapping(target = "categoryParent", source = "parent")
+    CategoryCreateResponse toCreateCategoryResponse(Category category);
 
-    public CategoryFilterResponse toCategoryFilterResponse(Category category) {
-        CategoryFilterResponse categoryFilterResponse = CategoryFilterResponse.builder()
-                .id(category.getId())
-                .name(category.getName())
-                .slug(category.getSlug())
-                .build();
-        return categoryFilterResponse;
-    }
+    @Mapping(target = "id", source = "id")
+    @Mapping(target = "name", source = "name")
+    @Mapping(target = "slug", source = "slug")
+    CategoryFilterResponse toCategoryFilterResponse(Category category);
 
+    @Mapping(target = "id", source = "id")
+    @Mapping(target = "name", source = "name")
+    @Mapping(target = "slug", source = "slug")
+    CategoryResponse toCategoryResponse(Category category);
 }
