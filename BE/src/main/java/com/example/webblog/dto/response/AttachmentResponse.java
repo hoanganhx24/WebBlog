@@ -1,6 +1,6 @@
 package com.example.webblog.dto.response;
 
-import com.example.webblog.entity.Category;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -10,9 +10,10 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
-public class CategoryCreateResponse {
-    String id;
-    String name;
-    String slug;
-    CategoryResponse categoryParent;
+public class AttachmentResponse {
+    @NotBlank
+    String url;
+
+    @NotBlank
+    String type;
 }

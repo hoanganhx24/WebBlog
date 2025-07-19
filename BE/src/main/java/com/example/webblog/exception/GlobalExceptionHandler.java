@@ -4,13 +4,14 @@ import com.example.webblog.dto.response.ApiResponse;
 import com.example.webblog.util.ResponseHelper;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import javax.naming.AuthenticationException;
-import java.nio.file.AccessDeniedException;
+import org.springframework.security.access.AccessDeniedException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -49,6 +50,12 @@ public class GlobalExceptionHandler {
     // 401 - Xác thực thất bại (token invalid/expired)
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<ApiResponse<Object>> handleAuthenticationException(AuthenticationException ex) {
+        return ResponseHelper.unauthorized(ex.getMessage());
+    }
+
+    // 401 - Token invalid với username sai,....
+    @ExceptionHandler(AuthenticationServiceException.class)
+    public ResponseEntity<ApiResponse<Object>> handleAuthenticationServiceException(AuthenticationServiceException ex) {
         return ResponseHelper.unauthorized(ex.getMessage());
     }
 

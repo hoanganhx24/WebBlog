@@ -9,6 +9,7 @@ import com.example.webblog.util.ResponseHelper;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,6 +20,7 @@ public class CategoryController {
     private CategoryService categoryService;
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<CategoryCreateResponse>>
     createCategory(@Valid @RequestBody CategoryCreateRequest req) {
         CategoryCreateResponse categoryCreateResponse = categoryService.createCategory(req);
@@ -26,12 +28,14 @@ public class CategoryController {
     }
 
     @DeleteMapping("/{idcategory}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<Object>> deleteCategory(@PathVariable("idcategory") String idcategory) {
         categoryService.deleteCategoryById(idcategory);
         return ResponseHelper.success("Delete category thanh cong");
     }
 
     @PatchMapping("/{categoryid}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<Object>> updateCategory
             (@PathVariable("categoryid") String idcategory, @Valid @RequestBody CategoryUpdateRequest req) {
         CategoryCreateResponse categoryCreateResponse = categoryService.updateInfo(idcategory, req);

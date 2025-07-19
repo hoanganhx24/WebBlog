@@ -1,6 +1,7 @@
 package com.example.webblog.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -19,7 +20,7 @@ public class PostCreateRequest {
     @NotBlank
     String content;
 
-    @NotBlank
+    @NotEmpty
     List<String> categoryIds;
 
     List<AttachmentRequest> attachments;

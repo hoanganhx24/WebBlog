@@ -13,6 +13,7 @@ import com.example.webblog.repository.Specification.CategorySpecification;
 import com.github.slugify.Slugify;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,8 +22,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.sql.SQLOutput;
 import java.util.List;
 
+@Slf4j
 @Service
 public class CategoryServiceImpl implements CategoryService {
     @Autowired
@@ -85,6 +88,9 @@ public class CategoryServiceImpl implements CategoryService {
                 .stream()
                 .map(category -> categoryMapper.toCategoryFilterResponse(category))
                 .toList();
+        for (CategoryFilterResponse categoryFilterResponse : content) {
+            log.info("categoryFilterResponse: {}", categoryFilterResponse.toString());
+        }
         return PageResponse.<CategoryFilterResponse>builder()
                 .content(content)
                 .page(page)
