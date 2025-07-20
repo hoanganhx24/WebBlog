@@ -5,12 +5,14 @@ import com.example.webblog.dto.request.UserChangeRequest;
 import com.example.webblog.dto.response.ApiResponse;
 import com.example.webblog.dto.response.PageResponse;
 import com.example.webblog.dto.response.UserResponse;
+import com.example.webblog.entity.Role;
 import com.example.webblog.service.User.UserService;
 import com.example.webblog.util.ResponseHelper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -57,8 +59,25 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<PageResponse<UserResponse>>> getUsers(@ModelAttribute UserFilterRequest request){
-        return ResponseHelper.success(userService.getUsers(request), "Lay danh sach user co phan trang thanh cong");
+    public ResponseEntity<ApiResponse<PageResponse<UserResponse>>> getUsers(
+            @RequestParam(required = false) int page,
+            @RequestParam(required = false) int pageSize,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) Role  role,
+            @RequestParam(required = false) Boolean isActive,
+            @RequestParam(required = false) LocalDateTime fromDate,
+            @RequestParam(required = false) LocalDateTime toDate,
+            @RequestParam(required = false) String sortBy,
+            @RequestParam(required = false) String sortOrder
+            ){
+        UserFilterRequest userFilterRequest = UserFilterRequest.builder()
+                .keyword(keyword)
+                .role(role)
+                .isActive(isActive)
+                .fromDate(fromDate)
+                .toDate(toDate)
+                .build();
+        return ResponseHelper.success(userService.getUsers(userFilterRequest, page, pageSize, sortBy, sortOrder), "Lay danh sach user co phan trang thanh cong");
     }
 
 }
