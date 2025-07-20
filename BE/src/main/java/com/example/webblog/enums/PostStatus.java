@@ -1,4 +1,4 @@
-package com.example.webblog.entity;
+package com.example.webblog.enums;
 
 public enum PostStatus {
     PUBLISHED,

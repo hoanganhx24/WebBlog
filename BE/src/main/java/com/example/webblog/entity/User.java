@@ -1,5 +1,6 @@
 package com.example.webblog.entity;
 
+import com.example.webblog.enums.Role;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
@@ -21,9 +22,6 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
-
-    @Column(name = "username", nullable = false, unique = true, columnDefinition = "NVARCHAR(255)")
-    private String username;
 
     @Column(name = "email", nullable = false, unique = true, columnDefinition = "NVARCHAR(255)")
     private String email;

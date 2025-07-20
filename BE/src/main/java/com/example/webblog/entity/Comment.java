@@ -45,8 +45,4 @@ public class Comment {
     @JsonBackReference
     private Post post;
 
-    @OneToMany(mappedBy = "comment", fetch = FetchType.LAZY)
-    @JsonManagedReference
-    private List<Attachment> attachments;
-
 }

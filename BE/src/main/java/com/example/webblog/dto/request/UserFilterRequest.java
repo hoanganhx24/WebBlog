@@ -1,6 +1,6 @@
 package com.example.webblog.dto.request;
 
-import com.example.webblog.entity.Role;
+import com.example.webblog.enums.Role;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -18,8 +18,4 @@ public class UserFilterRequest {
     Boolean isActive;
     LocalDateTime fromDate;
     LocalDateTime toDate;
-    int page = 0;
-    int pageSize = 10;
-    String sortBy;
-    String sortOrder;
 }

@@ -23,8 +23,4 @@ public class Attachment {
     @JsonBackReference
     private Post post;
 
-    @ManyToOne
-    @JoinColumn(name = "comment_id")
-    @JsonBackReference
-    private Comment comment;
 }

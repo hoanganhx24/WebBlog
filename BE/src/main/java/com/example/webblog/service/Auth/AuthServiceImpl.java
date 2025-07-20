@@ -33,6 +33,7 @@ import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.Objects;
 import java.util.UUID;
 
 
@@ -58,13 +59,16 @@ public class AuthServiceImpl implements AuthService {
 
     private final InvalidateTokenRepository invalidateTokenRepository;
 
+    private final PasswordEncoder passwordEncoder;
+
     @Autowired
     public AuthServiceImpl(UserRepository userRepository,
                            UserMapper userMapper,
-                           InvalidateTokenRepository invalidateTokenRepository) {
+                           InvalidateTokenRepository invalidateTokenRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.invalidateTokenRepository = invalidateTokenRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
 
@@ -73,7 +77,7 @@ public class AuthServiceImpl implements AuthService {
     public AuthResponse register(RegisterRequets registerDTO) {
 
         //System.out.println("Da chay den day");
-        if(userRepository.existsByUsername(registerDTO.getUsername())){
+        if(userRepository.existsByEmail(registerDTO.getEmail())) {
             throw new DuplicateResourceException("Username already exists");
         }
 
@@ -87,38 +91,29 @@ public class AuthServiceImpl implements AuthService {
 
         user.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
 
-        var token = generateToken(user);
 
         userRepository.save(user);
 
-        UserResponse  userResponse = userMapper.toUserResponse(user);
-
-        return AuthResponse.builder()
-                .token(token)
-                .user(userResponse)
-                .build();
+        return generateAuthResponse(user);
 
     }
 
     @Override
     public AuthResponse login(LoginRequest req) {
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
-        var user = userRepository.findByUsername(req.getUsername())
-                .orElseThrow(() -> new EntityNotFoundException("User not found with username: " + req.getUsername()));
+        User user = userRepository.findByEmail(req.getEmail()).orElse(null);
 
+        if(Objects.isNull(user)){
+            throw new ValidationException("User not found with username: " + req.getEmail());
+
+        }
         if(!passwordEncoder.matches(req.getPassword(), user.getPassword())){
             throw new ValidationException("Mat khau khong chinh xac");
         }
-        var token = generateToken(user);
-        UserResponse  userResponse = userMapper.toUserResponse(user);
-        return AuthResponse.builder()
-                .token(token)
-                .user(userResponse)
-                .build();
+        return generateAuthResponse(user);
     }
 
     @Override
-    public SignedJWT verifyToken(String token, boolean isRefresh) throws AuthenticationException {
+    public SignedJWT verifyToken(String token) throws AuthenticationException {
         try {
             SignedJWT signedJWT = SignedJWT.parse(token);
 
@@ -128,19 +123,14 @@ public class AuthServiceImpl implements AuthService {
                 throw new AuthenticationException("Invalid JWT signature");
             }
 
-            Date expiryTime = (isRefresh)
-                    ? new Date(signedJWT.getJWTClaimsSet()
-                        .getIssueTime()
-                        .toInstant()
-                        .plus(refreshableDuration, ChronoUnit.SECONDS).toEpochMilli())
-                    :signedJWT.getJWTClaimsSet().getExpirationTime();
+            Date expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
 
-            if ((expiryTime == null || !expiryTime.after(new Date())) && !isRefresh) {
+            if ((expiryTime == null || !expiryTime.after(new Date()))) {
                 throw new AuthenticationException("Expired JWT token");
             }
 
             if (invalidateTokenRepository.existsById(signedJWT.getJWTClaimsSet().getJWTID())) {
-                throw  new AuthenticationException("Invalid JWT token");
+                throw  new AuthenticationException("Token has expired");
             }
 
             return signedJWT;
@@ -151,73 +141,84 @@ public class AuthServiceImpl implements AuthService {
         }
     }
 
-    @Override
-    public void logout(LogoutRequest req) throws AuthenticationException, ParseException {
-        var signed = verifyToken(req.getToken(), false);
-
-        log.info(signed.getJWTClaimsSet().getJWTID());
-
-        String jti = signed.getJWTClaimsSet().getJWTID();
-        Date expiryTime = signed.getJWTClaimsSet().getExpirationTime();
-
-        InvalidateToken invalidateToken = InvalidateToken.builder()
-                .id(jti)
-                .expiryTime(expiryTime)
-                .build();
-
-        invalidateTokenRepository.save(invalidateToken);
-    }
 
     @Override
-    public AuthResponse refreshToken(RefreshRequest req) throws AuthenticationException, ParseException {
-        var signed = verifyToken(req.getToken(), true);
-
-        String jti = signed.getJWTClaimsSet().getJWTID();
-        Date expiryTime = signed.getJWTClaimsSet().getExpirationTime();
-
-        InvalidateToken invalidateToken = InvalidateToken.builder()
-                .id(jti)
-                .expiryTime(expiryTime)
-                .build();
-
-        invalidateTokenRepository.save(invalidateToken);
-
-        var username = signed.getJWTClaimsSet().getSubject();
-
-        var user = userRepository.findByUsername(username)
-                .orElseThrow(() ->  new EntityNotFoundException("User not found with username: " + username));
-
-        var token = generateToken(user);
-        UserResponse  userResponse = userMapper.toUserResponse(user);
-        return AuthResponse.builder()
-                .token(token)
-                .user(userResponse)
-                .build();
-
+    public void logout(LogoutRequest request) throws AuthenticationException {
+        SignedJWT signed = verifyToken(request.getToken());
+        try {
+            saveInvalidatedToken(signed);
+        }
+        catch (ParseException e){
+            throw new AuthenticationException("Invalid JWT format");
+        }
     }
 
-    private String generateToken(User user) {
+
+    @Override
+    public AuthResponse refreshToken(RefreshRequest request) throws AuthenticationException {
+        SignedJWT signed = verifyToken(request.getToken());
+
+        try {
+            String email = signed.getJWTClaimsSet().getSubject();
+
+            User existingUser = userRepository.findByEmail(email)
+                    .orElse(null);
+            if (Objects.isNull(existingUser)) {
+                throw new AuthenticationException("Subject token invalid");
+            }
+
+            saveInvalidatedToken(signed);
+            return generateAuthResponse(existingUser);
+
+        }
+        catch (ParseException e){
+            throw new AuthenticationException("Invalid JWT format");
+        }
+    }
+
+
+
+    private String generateToken(User user, boolean isRefreshToken) {
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
-
         JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
-                .subject(user.getUsername())
-                .issuer("hoanganhx24")
+                .subject(user.getEmail())
+                .issuer("web-blog")
                 .issueTime(new Date())
-                .expirationTime(new Date(Instant.now().plus(validDuration, ChronoUnit.SECONDS).toEpochMilli()))
-                .claim("scope", user.getRole().toString())
+                .expirationTime(new Date(Instant.now()
+                        .plus((isRefreshToken) ? refreshableDuration : validDuration, ChronoUnit.SECONDS).toEpochMilli()))
+                .claim("scope", (user.getRole() != null) ? user.getRole().toString() : "USER")
+                .claim("userId", user.getId())
                 .jwtID(UUID.randomUUID().toString())
                 .build();
-
         Payload payload = new Payload(claimsSet.toJSONObject());
         JWSObject jwsObject = new JWSObject(header, payload);
-
-       try{
-           jwsObject.sign(new MACSigner(signerKey.getBytes()));
-           return jwsObject.serialize();
-       }
-       catch (Exception e){
-           log.error(e.toString());
-           throw new ValidationException("JWT signing failed");
-       }
+        try {
+            jwsObject.sign(new MACSigner(signerKey.getBytes()));
+            return jwsObject.serialize();
+        } catch (JOSEException e) {
+            throw new RuntimeException("The code has an error");
+        }
     }
+
+    private AuthResponse generateAuthResponse(User user) {
+        return AuthResponse.builder()
+                .authenticated(true)
+                .accessToken(generateToken(user, false))
+                .refreshToken(generateToken(user, true))
+                .build();
+    }
+
+    private void saveInvalidatedToken(SignedJWT signedJWT) throws ParseException {
+        String jwtId = signedJWT.getJWTClaimsSet().getJWTID();
+        Date expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
+
+        InvalidateToken invalidateToken = InvalidateToken.builder()
+                .id(jwtId)
+                .expiryTime(expiryTime)
+                .build();
+
+        invalidateTokenRepository.save(invalidateToken);
+    }
+
+
 }

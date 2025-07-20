@@ -1,7 +1,7 @@
 package com.example.webblog.repository.Specification;
 
 import com.example.webblog.dto.request.UserFilterRequest;
-import com.example.webblog.entity.Role;
+import com.example.webblog.enums.Role;
 import com.example.webblog.entity.User;
 import org.springframework.data.jpa.domain.Specification;
 

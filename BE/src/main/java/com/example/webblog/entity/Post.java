@@ -1,5 +1,6 @@
 package com.example.webblog.entity;
 
+import com.example.webblog.enums.PostStatus;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;

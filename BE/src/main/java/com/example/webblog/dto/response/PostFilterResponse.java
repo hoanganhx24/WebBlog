@@ -1,6 +1,6 @@
 package com.example.webblog.dto.response;
 
-import com.example.webblog.entity.PostStatus;
+import com.example.webblog.enums.PostStatus;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 

@@ -10,7 +10,7 @@ import com.example.webblog.dto.response.UserResponse;
 import com.example.webblog.entity.Attachment;
 import com.example.webblog.entity.Category;
 import com.example.webblog.entity.Post;
-import com.example.webblog.entity.PostStatus;
+import com.example.webblog.enums.PostStatus;
 import com.example.webblog.mapper.PostMapper;
 import com.example.webblog.repository.AttachmentRepository;
 import com.example.webblog.repository.CategoryRepository;
@@ -26,10 +26,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.authentication.AuthenticationServiceException;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -52,7 +50,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PostResponse createPost(PostCreateRequest request) {
-        var author = userRepository.findByUsername(postBusiness.getCurrentUsername())
+        var author = userRepository.findByEmail(postBusiness.getCurrentEmail())
                 .orElseThrow(() -> new AuthenticationServiceException("Token invalid")
                 );
 

@@ -29,8 +29,8 @@ public class PostBusiness {
     private CategoryRepository categoryRepository;
 
     public void checkPostAuthor(String idPost){
-        String username = getCurrentUsername();
-        var user = userRepository.findByUsername(username)
+        String email = getCurrentEmail();
+        var user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new AuthenticationServiceException("Token invalid"));
         var author = postRepository.findAuthorByPostId(idPost)
                 .orElseThrow(() -> new EntityNotFoundException("Post not found"));
@@ -39,10 +39,10 @@ public class PostBusiness {
         }
     }
 
-    public String getCurrentUsername() {
+    public String getCurrentEmail() {
         var context = SecurityContextHolder.getContext();
-        String username = context.getAuthentication().getName();
-        return username;
+        String email = context.getAuthentication().getName();
+        return email;
     }
 
     public List<Category> createListCategory(List<String> categoryIds) {

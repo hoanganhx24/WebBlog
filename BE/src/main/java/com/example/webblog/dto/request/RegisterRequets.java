@@ -13,9 +13,6 @@ import org.hibernate.validator.constraints.Length;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class RegisterRequets {
-    @NotBlank(message = "Username là bắt buộc")
-    @Length(min = 2, max = 50, message = "Username có từ 2 cho đến 50 kí tự!")
-    String username;
 
     @NotEmpty
     @Email

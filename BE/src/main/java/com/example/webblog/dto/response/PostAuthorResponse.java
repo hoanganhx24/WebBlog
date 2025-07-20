@@ -1,10 +1,7 @@
 package com.example.webblog.dto.response;
 
-import com.example.webblog.entity.Role;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -14,7 +11,7 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PostAuthorResponse {
     String id;
-    String username;
+    String email;
     String firstName;
     String lastName;
 }

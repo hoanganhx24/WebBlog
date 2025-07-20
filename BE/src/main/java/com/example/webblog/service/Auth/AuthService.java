@@ -13,7 +13,7 @@ import java.text.ParseException;
 public interface AuthService {
     AuthResponse register(RegisterRequets registerDTO);
     AuthResponse login(LoginRequest loginDTO);
-    SignedJWT verifyToken(String token, boolean isRefresh) throws AuthenticationException;
+    SignedJWT verifyToken(String token) throws AuthenticationException;
     void logout(LogoutRequest req) throws AuthenticationException, ParseException;
     AuthResponse refreshToken(RefreshRequest req) throws AuthenticationException, ParseException;
 }
