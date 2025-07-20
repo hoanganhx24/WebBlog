@@ -11,6 +11,4 @@ import lombok.experimental.FieldDefaults;
 @Builder
 public class CategoryFilterRequest {
     String name;
-    int page = 0;
-    int pageSize = 10;
 }

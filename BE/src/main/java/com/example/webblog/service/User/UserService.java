@@ -13,5 +13,5 @@ public interface UserService {
     UserResponse changeInfo(String id, UserChangeRequest req);
     UserResponse getMyInfo();
     void deleteUser(String id);
-    PageResponse<UserResponse> getUsers(UserFilterRequest request);
+    PageResponse<UserResponse> getUsers(UserFilterRequest request, int page, int pageSize, String sortBy, String sortOrder);
 }

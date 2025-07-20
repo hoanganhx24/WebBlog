@@ -34,7 +34,7 @@ public class PostSpecification {
 
     public static Specification<Post> hasCategory(String category){
         return (root, query, cb) -> {
-            if(category == null){
+            if(category == null || category.isEmpty()){
                 return null;
             }
             String pattern = "%"+category.toLowerCase()+"%";

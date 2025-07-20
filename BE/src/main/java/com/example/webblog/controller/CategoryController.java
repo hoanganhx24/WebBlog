@@ -43,7 +43,15 @@ public class CategoryController {
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<PageResponse<CategoryFilterResponse>>> getAllCategories(@ModelAttribute CategoryFilterRequest request) {
-        return ResponseHelper.success(categoryService.getCategories(request), "Lay thanh cong danh sach category");
+    public ResponseEntity<ApiResponse<PageResponse<CategoryFilterResponse>>> getAllCategories(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) int page,
+            @RequestParam(required = false) int pageSize
+
+    ) {
+        CategoryFilterRequest request = CategoryFilterRequest.builder()
+                .name(name)
+                .build();
+        return ResponseHelper.success(categoryService.getCategories(request, page, pageSize), "Lay thanh cong danh sach category");
     }
 }

@@ -79,23 +79,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public PageResponse<UserResponse> getUsers(UserFilterRequest request) {
+    public PageResponse<UserResponse> getUsers(UserFilterRequest request, int page, int pageSize, String sortBy, String sortOrder) {
         Sort sort = Sort.unsorted();
-        if (request.getSortBy() != null) {
+        if (sortBy != null) {
             Sort.Direction direction = Sort.Direction.ASC;
             try {
-                if (request.getSortOrder() != null && !request.getSortOrder().isEmpty()) {
-                    direction = Sort.Direction.fromString(request.getSortOrder());
+                if (sortOrder != null && !sortOrder.isEmpty()) {
+                    direction = Sort.Direction.fromString(sortOrder);
                 }
             }
             catch (IllegalArgumentException e) {
                 direction = Sort.Direction.ASC;
             }
-            sort = Sort.by(direction, request.getSortBy());
+            sort = Sort.by(direction, sortBy);
         }
-
-        int page = request.getPage();
-        int pageSize = request.getPageSize();
 
         Pageable pageable = PageRequest.of(page, pageSize, sort);
         Specification<User> spec = UserSpecification.build(request);
@@ -105,8 +102,8 @@ public class UserServiceImpl implements UserService {
                 .map(user -> userMapper.toUserResponse(user))
                 .toList();
         return PageResponse.<UserResponse>builder()
-                .page(request.getPage())
-                .size(request.getPageSize())
+                .page(page)
+                .size(pageSize)
                 .content(content)
                 .totalElements(pageResult.getTotalElements())
                 .totalPages(pageResult.getTotalPages())

@@ -18,8 +18,4 @@ public class UserFilterRequest {
     Boolean isActive;
     LocalDateTime fromDate;
     LocalDateTime toDate;
-    int page = 0;
-    int pageSize = 10;
-    String sortBy;
-    String sortOrder;
 }

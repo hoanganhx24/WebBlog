@@ -75,10 +75,8 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public PageResponse<CategoryFilterResponse> getCategories(CategoryFilterRequest request) {
+    public PageResponse<CategoryFilterResponse> getCategories(CategoryFilterRequest request, int page, int pageSize) {
         Sort sort = Sort.unsorted();
-        int page = request.getPage();
-        int pageSize = request.getPageSize();
 
         Pageable pageable = PageRequest.of(page, pageSize, sort);
         Specification<Category> spec = CategorySpecification.build(request);

@@ -13,16 +13,17 @@ public interface CategoryMapper {
     @Mapping(target = "id", source = "id")
     @Mapping(target = "name", source = "name")
     @Mapping(target = "slug", source = "slug")
-    @Mapping(target = "categoryParent", source = "parent")
+    @Mapping(target = "categoryParent", source = "parent", qualifiedByName = "toCategoryResponse")
     CategoryCreateResponse toCreateCategoryResponse(Category category);
+
+    @Named("toCategoryResponse")
+    @Mapping(target = "id", source = "id")
+    @Mapping(target = "name", source = "name")
+    @Mapping(target = "slug", source = "slug")
+    CategoryResponse toCategoryResponse(Category category);
 
     @Mapping(target = "id", source = "id")
     @Mapping(target = "name", source = "name")
     @Mapping(target = "slug", source = "slug")
     CategoryFilterResponse toCategoryFilterResponse(Category category);
-
-    @Mapping(target = "id", source = "id")
-    @Mapping(target = "name", source = "name")
-    @Mapping(target = "slug", source = "slug")
-    CategoryResponse toCategoryResponse(Category category);
 }
