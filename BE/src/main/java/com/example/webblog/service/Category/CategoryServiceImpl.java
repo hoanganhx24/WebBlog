@@ -1,11 +1,8 @@
 package com.example.webblog.service.Category;
 
 import com.example.webblog.dto.request.CategoryCreateRequest;
-import com.example.webblog.dto.request.CategoryFilterRequest;
 import com.example.webblog.dto.request.CategoryUpdateRequest;
-import com.example.webblog.dto.response.CategoryCreateResponse;
-import com.example.webblog.dto.response.CategoryFilterResponse;
-import com.example.webblog.dto.response.PageResponse;
+import com.example.webblog.dto.response.CategoryResponse;
 import com.example.webblog.entity.Category;
 import com.example.webblog.mapper.CategoryMapper;
 import com.example.webblog.repository.CategoryRepository;
@@ -14,30 +11,29 @@ import com.github.slugify.Slugify;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.sql.SQLOutput;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Service
 public class CategoryServiceImpl implements CategoryService {
-    @Autowired
-    private CategoryRepository categoryRepository;
+    private final CategoryRepository categoryRepository;
 
-    @Autowired
-    private CategoryMapper categoryMapper;
+    private final CategoryMapper categoryMapper;
 
     private final Slugify slugify = new Slugify();
 
+    public CategoryServiceImpl(CategoryRepository categoryRepository, CategoryMapper categoryMapper) {
+        this.categoryRepository = categoryRepository;
+        this.categoryMapper = categoryMapper;
+    }
+
     @Override
-    public CategoryCreateResponse createCategory(CategoryCreateRequest request) {
+    public CategoryResponse createCategory(CategoryCreateRequest request) {
         String slug = slugify.slugify(request.getName());
         if (categoryRepository.existsBySlug(slug)) {
             throw new EntityExistsException("Category with name " + slug + " already exists");
@@ -46,23 +42,20 @@ public class CategoryServiceImpl implements CategoryService {
                 .name(request.getName())
                 .slug(slug)
                 .build();
-        if(request.getParentId() != null){
-            var categoryParent = categoryRepository.findById(request.getParentId())
-                    .orElseThrow(() -> new EntityNotFoundException("Category not found with id: " + request.getParentId()));
-            category.setParent(categoryParent);
-        }
-        return categoryMapper.toCreateCategoryResponse(categoryRepository.save(category));
+        return categoryMapper.toCategoryResponse(categoryRepository.save(category));
     }
 
     @Override
     public void deleteCategoryById(String id) {
-        var category = categoryRepository.findById(id)
-                .orElseThrow(()  -> new EntityNotFoundException("Category not found with id: " + id));
+        Category category = categoryRepository.findById(id).orElse(null);
+        if (Objects.isNull(category)) {
+            throw new EntityNotFoundException("Category with id " + id + " not found");
+        }
         categoryRepository.delete(category);
     }
 
     @Override
-    public CategoryCreateResponse updateInfo(String id, CategoryUpdateRequest request) {
+    public CategoryResponse updateInfo(String id, CategoryUpdateRequest request) {
         var category = categoryRepository.findById(id)
                 .orElseThrow(()  -> new EntityNotFoundException("Category not found with id: " + id));
         String slug = slugify.slugify(request.getName());
@@ -71,34 +64,18 @@ public class CategoryServiceImpl implements CategoryService {
         }
         category.setName(request.getName());
         category.setSlug(slug);
-        return categoryMapper.toCreateCategoryResponse(categoryRepository.save(category));
+        return categoryMapper.toCategoryResponse(categoryRepository.save(category));
     }
 
     @Override
-    public PageResponse<CategoryFilterResponse> getCategories(CategoryFilterRequest request, int page, int pageSize) {
+    public Page<CategoryResponse> getCategories(String keyword, int page, int pageSize) {
         Sort sort = Sort.unsorted();
 
         Pageable pageable = PageRequest.of(page, pageSize, sort);
-        Specification<Category> spec = CategorySpecification.build(request);
+        Specification<Category> spec = CategorySpecification.build(keyword);
 
         Page<Category>  pageResult = categoryRepository.findAll(spec, pageable);
-        List<CategoryFilterResponse> content = pageResult.getContent()
-                .stream()
-                .map(category -> categoryMapper.toCategoryFilterResponse(category))
-                .toList();
-        for (CategoryFilterResponse categoryFilterResponse : content) {
-            log.info("categoryFilterResponse: {}", categoryFilterResponse.toString());
-        }
-        return PageResponse.<CategoryFilterResponse>builder()
-                .content(content)
-                .page(page)
-                .size(pageSize)
-                .first(pageResult.isFirst())
-                .last(pageResult.isLast())
-                .totalPages(pageResult.getTotalPages())
-                .totalElements(pageResult.getTotalElements())
-                .hasNext(pageResult.hasNext())
-                .hasPrevious(pageResult.hasPrevious())
-                .build();
+        List<CategoryResponse> content = categoryMapper.toCategoryResponseList(pageResult.getContent());
+        return new PageImpl<>(content, pageable, pageResult.getTotalElements());
     }
 }

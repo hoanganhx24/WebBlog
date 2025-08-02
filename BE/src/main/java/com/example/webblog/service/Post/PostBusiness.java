@@ -8,7 +8,7 @@ import com.example.webblog.repository.CategoryRepository;
 import com.example.webblog.repository.PostRepository;
 import com.example.webblog.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,15 +18,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
+@AllArgsConstructor
 public class PostBusiness {
-    @Autowired
-    private PostRepository postRepository;
+    private final PostRepository postRepository;
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private CategoryRepository categoryRepository;
+    private final CategoryRepository categoryRepository;
 
     public void checkPostAuthor(String idPost){
         String email = getCurrentEmail();
@@ -41,8 +39,7 @@ public class PostBusiness {
 
     public String getCurrentEmail() {
         var context = SecurityContextHolder.getContext();
-        String email = context.getAuthentication().getName();
-        return email;
+        return context.getAuthentication().getName();
     }
 
     public List<Category> createListCategory(List<String> categoryIds) {

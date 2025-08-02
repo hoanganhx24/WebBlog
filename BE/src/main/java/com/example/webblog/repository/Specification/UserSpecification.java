@@ -23,7 +23,6 @@ public class UserSpecification {
             }
             String pattern = "%"+keyword.toLowerCase()+"%";
             return cb.or(
-                    cb.like(cb.lower(root.get("username")), pattern),
                     cb.like(cb.lower(root.get("email")), pattern),
                     cb.like(cb.concat(cb.coalesce(root.get("firstName"), ""), cb.coalesce(root.get("lastName"), "")), pattern)
             );

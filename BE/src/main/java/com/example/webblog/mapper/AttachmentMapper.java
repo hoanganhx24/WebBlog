@@ -2,15 +2,10 @@ package com.example.webblog.mapper;
 
 import com.example.webblog.dto.response.AttachmentResponse;
 import com.example.webblog.entity.Attachment;
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
-@Component
-public class AttachmentMapper {
-    public AttachmentResponse toAttachmentResponse(Attachment attachment) {
-        AttachmentResponse attachmentResponse = AttachmentResponse.builder()
-                .url(attachment.getUrl())
-                .type(attachment.getType())
-                .build();
-        return attachmentResponse;
-    }
+@Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+public interface AttachmentMapper {
+    AttachmentResponse toAttachmentResponse(Attachment attachment);
 }

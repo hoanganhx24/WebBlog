@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @Builder
 public class PostFilterRequest {
     String keyword;
+    String email;
     String category;
     LocalDateTime fromDate;
     LocalDateTime toDate;

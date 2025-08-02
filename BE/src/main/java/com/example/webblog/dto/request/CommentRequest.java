@@ -1,17 +1,15 @@
-package com.example.webblog.dto.response;
+package com.example.webblog.dto.request;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-@Data
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
-public class CategoryFilterResponse {
-    String id;
-    String name;
-    String slug;
+public class CommentRequest {
+    String content;
+    String postId;
 }

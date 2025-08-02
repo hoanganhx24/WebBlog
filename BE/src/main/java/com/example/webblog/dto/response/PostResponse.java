@@ -19,9 +19,9 @@ public class PostResponse {
     String content;
     String slug;
     PostStatus status;
+    PostAuthorResponse author;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
     List<AttachmentResponse> attachments;
     List<CategoryResponse> categories;
-    int comments;
 }

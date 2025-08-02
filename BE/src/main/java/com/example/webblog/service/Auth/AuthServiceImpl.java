@@ -5,11 +5,10 @@ import com.example.webblog.dto.request.LogoutRequest;
 import com.example.webblog.dto.request.RefreshRequest;
 import com.example.webblog.dto.request.RegisterRequets;
 import com.example.webblog.dto.response.AuthResponse;
-import com.example.webblog.dto.response.UserResponse;
 import com.example.webblog.entity.InvalidateToken;
 import com.example.webblog.entity.User;
+import com.example.webblog.enums.Role;
 import com.example.webblog.exception.DuplicateResourceException;
-import com.example.webblog.mapper.UserMapper;
 import com.example.webblog.repository.InvalidateTokenRepository;
 import com.example.webblog.repository.UserRepository;
 import com.nimbusds.jose.*;
@@ -17,13 +16,11 @@ import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ValidationException;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,18 +52,15 @@ public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
 
-    private final UserMapper userMapper;
-
     private final InvalidateTokenRepository invalidateTokenRepository;
 
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
     public AuthServiceImpl(UserRepository userRepository,
-                           UserMapper userMapper,
-                           InvalidateTokenRepository invalidateTokenRepository, PasswordEncoder passwordEncoder) {
+                           InvalidateTokenRepository invalidateTokenRepository,
+                           PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
-        this.userMapper = userMapper;
         this.invalidateTokenRepository = invalidateTokenRepository;
         this.passwordEncoder = passwordEncoder;
     }
@@ -75,23 +69,15 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public AuthResponse register(RegisterRequets registerDTO) {
-
-        //System.out.println("Da chay den day");
-        if(userRepository.existsByEmail(registerDTO.getEmail())) {
-            throw new DuplicateResourceException("Username already exists");
-        }
-
         if(userRepository.existsByEmail(registerDTO.getEmail())){
             throw new DuplicateResourceException("Email already exists");
         }
-
-        User user = userMapper.toUser(registerDTO);
-
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
-
-        user.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
-
-
+        User user = User.builder()
+                .email(registerDTO.getEmail())
+                .role(Role.USER)
+                .isActive(true)
+                .password(passwordEncoder.encode(registerDTO.getPassword()))
+                .build();
         userRepository.save(user);
 
         return generateAuthResponse(user);
@@ -103,7 +89,7 @@ public class AuthServiceImpl implements AuthService {
         User user = userRepository.findByEmail(req.getEmail()).orElse(null);
 
         if(Objects.isNull(user)){
-            throw new ValidationException("User not found with username: " + req.getEmail());
+            throw new ValidationException("User not found with email: " + req.getEmail());
 
         }
         if(!passwordEncoder.matches(req.getPassword(), user.getPassword())){

@@ -14,5 +14,4 @@ public class CategoryCreateResponse {
     String id;
     String name;
     String slug;
-    CategoryResponse categoryParent;
 }

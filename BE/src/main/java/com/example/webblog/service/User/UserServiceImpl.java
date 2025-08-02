@@ -2,43 +2,37 @@ package com.example.webblog.service.User;
 
 import com.example.webblog.dto.request.UserFilterRequest;
 import com.example.webblog.dto.request.UserChangeRequest;
-import com.example.webblog.dto.response.PageResponse;
 import com.example.webblog.dto.response.UserResponse;
 import com.example.webblog.entity.User;
-import com.example.webblog.exception.DuplicateResourceException;
 import com.example.webblog.mapper.UserMapper;
 import com.example.webblog.repository.Specification.UserSpecification;
 import com.example.webblog.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Objects;
 
 @Slf4j
 @Service
 public class UserServiceImpl implements UserService {
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private UserMapper userMapper;
+    private final UserMapper userMapper;
+
+    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper) {
+        this.userRepository = userRepository;
+        this.userMapper = userMapper;
+    }
 
     @Override
     public List<UserResponse> getAllUser() {
-        return userRepository.findAll()
-                .stream()
-                .map(user -> userMapper.toUserResponse(user))
-                .collect(Collectors.toList());
+        return userMapper.toUserResponseList(userRepository.findAll());
     }
 
     @Override
@@ -49,16 +43,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse changeInfo(String id, UserChangeRequest req) {
-        var user = userRepository.findUserById(id)
-                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
-        if (!user.getEmail().equals(req.getEmail())) {
-            if(userRepository.existsByEmail(req.getEmail())){
-                throw new DuplicateResourceException("Email already exists");
-            }
-            user.setEmail(req.getEmail());
+
+        User user = userRepository.findUserById(id).orElse(null);
+
+        if (Objects.isNull(user)) {
+            throw new EntityNotFoundException("User not found with id: " + id);
         }
+
         user.setFirstName(req.getFirstName());
         user.setLastName(req.getLastName());
+        user.setDob(req.getDateOfBirth());
+        user.setNickname(req.getNickname());
+        user.setAvatar(req.getAvatar());
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
@@ -79,38 +75,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public PageResponse<UserResponse> getUsers(UserFilterRequest request, int page, int pageSize, String sortBy, String sortOrder) {
+    public Page<UserResponse> getUsers(UserFilterRequest request, int page, int pageSize) {
         Sort sort = Sort.unsorted();
-        if (sortBy != null) {
-            Sort.Direction direction = Sort.Direction.ASC;
-            try {
-                if (sortOrder != null && !sortOrder.isEmpty()) {
-                    direction = Sort.Direction.fromString(sortOrder);
-                }
-            }
-            catch (IllegalArgumentException e) {
-                direction = Sort.Direction.ASC;
-            }
-            sort = Sort.by(direction, sortBy);
-        }
-
         Pageable pageable = PageRequest.of(page, pageSize, sort);
         Specification<User> spec = UserSpecification.build(request);
         Page<User> pageResult = userRepository.findAll(spec, pageable);
-        List<UserResponse> content = pageResult.getContent()
-                .stream()
-                .map(user -> userMapper.toUserResponse(user))
-                .toList();
-        return PageResponse.<UserResponse>builder()
-                .page(page)
-                .size(pageSize)
-                .content(content)
-                .totalElements(pageResult.getTotalElements())
-                .totalPages(pageResult.getTotalPages())
-                .first(pageResult.isFirst())
-                .last(pageResult.isLast())
-                .hasNext(pageResult.hasNext())
-                .hasPrevious(pageResult.hasPrevious())
-                .build();
+        List<UserResponse> content = userMapper.toUserResponseList(pageResult.getContent());
+        return new PageImpl<>(content, pageable, pageResult.getTotalElements());
     }
 }

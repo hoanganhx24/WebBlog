@@ -4,8 +4,6 @@ import com.example.webblog.dto.request.PostCreateRequest;
 import com.example.webblog.dto.request.PostFilterRequest;
 import com.example.webblog.dto.request.PostUpdateRequest;
 import com.example.webblog.dto.response.ApiResponse;
-import com.example.webblog.dto.response.PageResponse;
-import com.example.webblog.dto.response.PostFilterResponse;
 import com.example.webblog.dto.response.PostResponse;
 import com.example.webblog.service.Post.PostService;
 import com.example.webblog.util.ResponseHelper;
@@ -41,8 +39,9 @@ public class PostController {
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<PageResponse<PostFilterResponse>>> getPosts(
+    public ResponseEntity<ApiResponse<PostResponse>> getPosts(
             @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String email,
             @RequestParam(required = false) String category,
             @RequestParam(required = false) LocalDateTime fromDate,
             @RequestParam(required = false) LocalDateTime toDate,
@@ -52,9 +51,10 @@ public class PostController {
         PostFilterRequest postFilterRequest = PostFilterRequest.builder()
                 .category(category)
                 .keyword(keyword)
+                .email(email)
                 .fromDate(fromDate)
                 .toDate(toDate)
                 .build();
-        return ResponseHelper.success(postService.getPosts(postFilterRequest,  page, pageSize), "Lay thanh cong danh sach post");
+        return ResponseHelper.ofPage(postService.getPosts(postFilterRequest,  page, pageSize));
     }
 }

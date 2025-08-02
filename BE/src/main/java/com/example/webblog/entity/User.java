@@ -23,33 +23,31 @@ public class User {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    @Column(name = "email", nullable = false, unique = true, columnDefinition = "NVARCHAR(255)")
+    @Column(nullable = false, unique = true, columnDefinition = "NVARCHAR(255)")
     private String email;
 
-    @Column(name = "password", nullable = false)
+    @Column(nullable = false)
     private String password;
 
     private String firstName;
 
     private String lastName;
 
-    @Column(name = "isactive")
     private Boolean isActive;
 
-    @Column(name = "role")
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Role role;
 
     private String avatar;
 
+    @Column(unique = true)
     private String nickname;
 
     private LocalDateTime dob;
 
-    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
     @PrePersist
@@ -73,9 +71,4 @@ public class User {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<Reaction> reactions;
 
-    public String getFullName() {
-        return Stream.of(lastName, firstName)
-                .filter(Objects::nonNull)
-                .collect(Collectors.joining(" "));
-    }
 }

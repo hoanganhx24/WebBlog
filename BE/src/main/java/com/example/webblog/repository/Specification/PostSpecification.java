@@ -14,7 +14,20 @@ public class PostSpecification {
         return hasKeyword(request.getKeyword())
                 .and(hasCategory(request.getCategory()))
                 .and(hasFromDate(request.getFromDate()))
-                .and(hasToDate(request.getToDate()));
+                .and(hasToDate(request.getToDate()))
+                .and(hasEmail(request.getEmail()));
+    }
+
+    public static Specification<Post> hasEmail(String email){
+        return (root, query, cb) -> {
+            if(email == null){
+                return null;
+            }
+            Join<Post, User> authorJoin = root.join("author");
+            String pattern = "%"+email.toLowerCase()+"%";
+            return cb.like(cb.lower(authorJoin.get("email")), pattern);
+
+        };
     }
 
     public static Specification<Post> hasKeyword(String keyword){
@@ -25,7 +38,7 @@ public class PostSpecification {
             Join<Post, User> authorJoin = root.join("author");
             String pattern = "%"+keyword.toLowerCase()+"%";
             return cb.or(
-                    cb.like(cb.lower(authorJoin.get("username")), pattern),
+                    cb.like(cb.lower(authorJoin.get("email")), pattern),
                     cb.like(cb.concat(cb.coalesce(authorJoin.get("firstName"), ""), cb.coalesce(authorJoin.get("lastName"), "")), pattern),
                     cb.like(cb.lower(root.get("title")), pattern)
             );

@@ -12,6 +12,8 @@ import lombok.experimental.FieldDefaults;
 public class PostAuthorResponse {
     String id;
     String email;
+    String nickname;
+    String avatar;
     String firstName;
     String lastName;
 }

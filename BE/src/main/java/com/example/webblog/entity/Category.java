@@ -20,10 +20,6 @@ public class Category {
     private String name;
     private String slug;
 
-    @ManyToOne
-    @JoinColumn(name = "parent_id")
-    @JsonBackReference
-    private Category parent;
 
     @ManyToMany(mappedBy = "categories",  fetch = FetchType.LAZY)
     @JsonBackReference

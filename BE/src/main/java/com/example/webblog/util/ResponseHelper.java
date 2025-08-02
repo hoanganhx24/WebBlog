@@ -1,6 +1,7 @@
 package com.example.webblog.util;
 
 import com.example.webblog.dto.response.ApiResponse;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -76,5 +77,9 @@ public class ResponseHelper {
                 .errors(errors)
                 .timestamp(LocalDateTime.now().toString())
                 .build();
+    }
+
+    public static <T> ResponseEntity<ApiResponse<T>> ofPage(Page<T> page) {
+        return ResponseEntity.ok(ApiResponse.ofPage(page));
     }
 }

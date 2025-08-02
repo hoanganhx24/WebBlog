@@ -3,11 +3,11 @@ package com.example.webblog.controller;
 import com.example.webblog.dto.request.UserFilterRequest;
 import com.example.webblog.dto.request.UserChangeRequest;
 import com.example.webblog.dto.response.ApiResponse;
-import com.example.webblog.dto.response.PageResponse;
 import com.example.webblog.dto.response.UserResponse;
 import com.example.webblog.enums.Role;
 import com.example.webblog.service.User.UserService;
 import com.example.webblog.util.ResponseHelper;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -38,8 +38,8 @@ public class UserController {
         return ResponseHelper.success(userRes, "Lay thong tin user thanh cong");
     }
 
-    @PatchMapping("/{userid}")
-    public ResponseEntity<ApiResponse<UserResponse>>  updateUser(@PathVariable("userid") String userid, @RequestBody UserChangeRequest req){
+    @PutMapping("/{userid}")
+    public ResponseEntity<ApiResponse<UserResponse>>  updateUser(@PathVariable("userid") String userid, @Valid @RequestBody UserChangeRequest req){
         UserResponse userRes= userService.changeInfo(userid, req);
         return ResponseHelper.success(userRes, "Cap nhat thong tin thanh cong");
     }
@@ -59,16 +59,14 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<PageResponse<UserResponse>>> getUsers(
+    public ResponseEntity<ApiResponse<UserResponse>> getUsers(
             @RequestParam(required = false) int page,
             @RequestParam(required = false) int pageSize,
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) Role  role,
             @RequestParam(required = false) Boolean isActive,
             @RequestParam(required = false) LocalDateTime fromDate,
-            @RequestParam(required = false) LocalDateTime toDate,
-            @RequestParam(required = false) String sortBy,
-            @RequestParam(required = false) String sortOrder
+            @RequestParam(required = false) LocalDateTime toDate
             ){
         UserFilterRequest userFilterRequest = UserFilterRequest.builder()
                 .keyword(keyword)
@@ -77,7 +75,7 @@ public class UserController {
                 .fromDate(fromDate)
                 .toDate(toDate)
                 .build();
-        return ResponseHelper.success(userService.getUsers(userFilterRequest, page, pageSize, sortBy, sortOrder), "Lay danh sach user co phan trang thanh cong");
+        return ResponseHelper.ofPage(userService.getUsers(userFilterRequest,page,pageSize));
     }
 
 }

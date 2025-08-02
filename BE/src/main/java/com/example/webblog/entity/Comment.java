@@ -40,9 +40,9 @@ public class Comment {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id", nullable = false)
-    @JsonBackReference
-    private Post post;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "post_id", nullable = false)
+//    @JsonBackReference
+//    private Post post;
 
 }

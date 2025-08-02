@@ -1,13 +1,12 @@
 package com.example.webblog.controller;
 
 import com.example.webblog.dto.request.CategoryCreateRequest;
-import com.example.webblog.dto.request.CategoryFilterRequest;
 import com.example.webblog.dto.request.CategoryUpdateRequest;
 import com.example.webblog.dto.response.*;
 import com.example.webblog.service.Category.CategoryService;
 import com.example.webblog.util.ResponseHelper;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -15,16 +14,16 @@ import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/category")
+@AllArgsConstructor
 public class CategoryController {
-    @Autowired
-    private CategoryService categoryService;
+    private final CategoryService categoryService;
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<CategoryCreateResponse>>
+    public ResponseEntity<ApiResponse<CategoryResponse>>
     createCategory(@Valid @RequestBody CategoryCreateRequest req) {
-        CategoryCreateResponse categoryCreateResponse = categoryService.createCategory(req);
-        return ResponseHelper.created(categoryCreateResponse, "Tao category thanh cong");
+        CategoryResponse categoryResponse = categoryService.createCategory(req);
+        return ResponseHelper.created(categoryResponse, "Tao category thanh cong");
     }
 
     @DeleteMapping("/{idcategory}")
@@ -36,22 +35,19 @@ public class CategoryController {
 
     @PatchMapping("/{categoryid}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<Object>> updateCategory
+    public ResponseEntity<ApiResponse<CategoryResponse>> updateCategory
             (@PathVariable("categoryid") String idcategory, @Valid @RequestBody CategoryUpdateRequest req) {
-        CategoryCreateResponse categoryCreateResponse = categoryService.updateInfo(idcategory, req);
-        return ResponseHelper.success(categoryCreateResponse, "Update category thanh cong");
+        CategoryResponse categoryResponse = categoryService.updateInfo(idcategory, req);
+        return ResponseHelper.success(categoryResponse, "Update category thanh cong");
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<PageResponse<CategoryFilterResponse>>> getAllCategories(
+    public ResponseEntity<ApiResponse<CategoryResponse>> getAllCategories(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) int page,
             @RequestParam(required = false) int pageSize
 
     ) {
-        CategoryFilterRequest request = CategoryFilterRequest.builder()
-                .name(name)
-                .build();
-        return ResponseHelper.success(categoryService.getCategories(request, page, pageSize), "Lay thanh cong danh sach category");
+        return ResponseHelper.ofPage(categoryService.getCategories(name, page, pageSize));
     }
 }

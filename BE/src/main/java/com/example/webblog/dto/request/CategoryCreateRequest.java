@@ -13,7 +13,4 @@ import lombok.experimental.FieldDefaults;
 public class CategoryCreateRequest {
     @NotBlank
     String name;
-
-    String parentId;
-
 }
