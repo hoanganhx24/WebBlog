@@ -2,6 +2,7 @@ package com.example.webblog.entity;
 
 import com.example.webblog.enums.Role;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -62,10 +63,11 @@ public class User {
     }
 
     @OneToMany(mappedBy = "author",  fetch = FetchType.LAZY)
-    @JsonBackReference
+    @JsonManagedReference
     private List<Post>  posts;
 
     @OneToMany(mappedBy = "user",   fetch = FetchType.LAZY)
+    @JsonManagedReference
     private List<Comment> comments;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)

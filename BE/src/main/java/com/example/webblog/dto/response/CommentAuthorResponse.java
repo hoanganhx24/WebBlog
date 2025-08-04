@@ -3,18 +3,14 @@ package com.example.webblog.dto.response;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDateTime;
-
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CommentResponse {
+public class CommentAuthorResponse {
     String id;
-    String content;
-    CommentAuthorResponse author;
-    LocalDateTime createdAt;
-    LocalDateTime updatedAt;
+    String nickname;
+    String avatar;
 }
