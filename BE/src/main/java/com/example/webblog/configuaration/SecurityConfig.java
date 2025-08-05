@@ -19,7 +19,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableMethodSecurity
 public class SecurityConfig {
     public static final String[] PUBLIC_ENDPOINTS_POST = {"/auth/login", "/auth/register", "/auth/logout", "/auth/refresh"};
-    public static final String[] PUBLIC_ENDPOINTS_GET = {"/post"};
+    public static final String[] PUBLIC_ENDPOINTS_GET = {"/post", "/category"};
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 

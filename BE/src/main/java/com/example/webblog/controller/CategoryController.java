@@ -44,8 +44,8 @@ public class CategoryController {
     @GetMapping
     public ResponseEntity<ApiResponse<CategoryResponse>> getAllCategories(
             @RequestParam(required = false) String name,
-            @RequestParam(required = false) int page,
-            @RequestParam(required = false) int pageSize
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int pageSize
 
     ) {
         return ResponseHelper.ofPage(categoryService.getCategories(name, page, pageSize));
